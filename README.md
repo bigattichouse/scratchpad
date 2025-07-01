@@ -2,6 +2,10 @@
 
 A lightweight VM tool for development and testing. Create isolated environments, run commands, and experiment safely without affecting your host system.
 
+## Background
+
+Using AI commandline tools can require allowing some scary permissions (ex: "allow model to rm -rf?"), I wanted to isolate commands using a VM that could be ephemeral (erased each time), or persistent, as needed.  So instead of the AI trying to "reason out" math, it can write a little program and run it to get the answer directly. This VASTLY increases good output.  This was also an experiment to use claude to create what I needed, and I'm very happy with the result.
+
 ## Features
 
 - **Ephemeral by default**: Changes are discarded unless explicitly saved
