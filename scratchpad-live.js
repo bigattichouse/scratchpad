@@ -136,6 +136,11 @@ class ProcessManager {
     // Build QEMU command
     const qemuCmd = await this.buildQemuCommand(config);
     
+    // Debug output
+    if (process.env.DEBUG) {
+      console.log(`${colors.gray}QEMU command: ${qemuCmd.join(' ')}${colors.reset}`);
+    }
+    
     // Create a shell script to spawn the process
     const scriptContent = `#!/bin/bash
 exec nohup ${qemuCmd.join(' ')} > "${logFile}" 2>&1 &
@@ -171,7 +176,17 @@ echo $!
         } catch {}
         
         if (code !== 0 || !pid.trim()) {
-          reject(new Error(`Failed to spawn VM: ${error || 'Unknown error'}`));
+          // Try to read the log file for more details
+          let logContent = '';
+          try {
+            logContent = await fs.readFile(logFile, 'utf8');
+            if (logContent) {
+              console.error(`${colors.red}QEMU Error Output:${colors.reset}`);
+              console.error(logContent.substring(0, 1000)); // First 1000 chars
+            }
+          } catch {}
+          
+          reject(new Error(`Failed to spawn VM: ${error || logContent || 'Unknown error'}`));
           return;
         }
         
@@ -188,12 +203,22 @@ echo $!
           processInfo.pid.toString()
         );
         
-        // Verify process started
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Verify process started - give it more time
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const running = await this.isProcessRunning(processInfo.pid);
         
         if (!running) {
-          reject(new Error('Process died immediately after starting'));
+          // Try to read the log file for crash details
+          let crashLog = '';
+          try {
+            crashLog = await fs.readFile(logFile, 'utf8');
+            if (crashLog) {
+              console.error(`${colors.red}VM crashed. QEMU output:${colors.reset}`);
+              console.error(crashLog.substring(0, 1000));
+            }
+          } catch {}
+          
+          reject(new Error('Process died immediately after starting. Check logs at: ' + logFile));
           return;
         }
         
@@ -206,18 +231,46 @@ echo $!
 
   static async buildQemuCommand(config) {
     const vmPath = path.join(CONFIG.vmDir, config.baseVm);
-    const diskPath = path.join(vmPath, 'disk.qcow2');
+    const baseDiskPath = path.join(vmPath, 'disk.qcow2');
     const cloudInitPath = path.join(vmPath, 'cloud-init.iso');
     
     // Check if base VM exists
     try {
-      await fs.access(diskPath);
+      await fs.access(baseDiskPath);
     } catch {
       throw new Error(`Base VM '${config.baseVm}' not found. Create it with: scratchpad-prepare --name ${config.baseVm}`);
     }
     
     // Detect acceleration
     const acceleration = await this.detectAcceleration();
+    
+    // For ephemeral mode, create a unique overlay disk
+    let diskArgs;
+    if (config.diskMode === 'ephemeral') {
+      // Create overlay directory
+      const overlayDir = path.join(CONFIG.baseDir, 'overlays');
+      await fs.mkdir(overlayDir, { recursive: true });
+      
+      const overlayPath = path.join(overlayDir, `${config.name}.qcow2`);
+      
+      // Create overlay disk based on base image
+      try {
+        const createCmd = `qemu-img create -f qcow2 -b ${baseDiskPath} -F qcow2 ${overlayPath}`;
+        execSync(createCmd, { stdio: 'pipe' });
+        
+        // Store overlay path for cleanup
+        config.overlayPath = overlayPath;
+        
+        diskArgs = ['-drive', `file=${overlayPath},format=qcow2,if=virtio`];
+      } catch (err) {
+        // Fallback to snapshot mode if overlay creation fails
+        console.warn(`${colors.yellow}Warning: Could not create overlay disk, using snapshot mode${colors.reset}`);
+        diskArgs = ['-drive', `file=${baseDiskPath},format=qcow2,if=virtio,snapshot=on`];
+      }
+    } else {
+      // Persistent mode - use base disk directly
+      diskArgs = ['-drive', `file=${baseDiskPath},format=qcow2,if=virtio`];
+    }
     
     const cmd = [
       'qemu-system-x86_64',
@@ -228,12 +281,8 @@ echo $!
       '-cpu', 'host',
       '-smp', '2',
       
-      // Disk - ephemeral or persistent
-      '-drive', config.diskMode === 'persistent' 
-        ? `file=${diskPath},format=qcow2,if=virtio`
-        : `file=${diskPath},format=qcow2,if=virtio,snapshot=on`,
-      
-      // Cloud-init if exists
+      // Disk
+      ...diskArgs,
     ];
     
     // Add cloud-init if available
@@ -313,7 +362,6 @@ echo $!
       // Try graceful shutdown via SSH first
       try {
         await this.gracefulShutdown(vm);
-        return;
       } catch (err) {
         // Continue with forceful shutdown
         console.log(`${colors.yellow}Graceful shutdown failed, forcing...${colors.reset}`);
@@ -333,6 +381,16 @@ echo $!
       try {
         await fs.unlink(path.join(CONFIG.pidDir, `${vm.name}.pid`));
       } catch {}
+      
+      // Clean up overlay disk if ephemeral
+      if (vm.diskMode === 'ephemeral') {
+        const overlayPath = path.join(CONFIG.baseDir, 'overlays', `${vm.name}.qcow2`);
+        try {
+          await fs.unlink(overlayPath);
+        } catch (err) {
+          // Overlay might not exist if using snapshot mode
+        }
+      }
     }
   }
 
@@ -562,6 +620,14 @@ class ScratchpadLiveCLI {
       
       // Allocate port
       config.sshPort = await PortAllocator.allocateSSHPort();
+      console.log(`${colors.gray}Allocated SSH port: ${config.sshPort}${colors.reset}`);
+      
+      // Debug mode - show what we're doing
+      if (process.env.DEBUG || args.includes('--debug')) {
+        console.log(`${colors.gray}Base VM: ${config.baseVm}${colors.reset}`);
+        console.log(`${colors.gray}Memory: ${config.memory}${colors.reset}`);
+        console.log(`${colors.gray}Disk mode: ${config.diskMode}${colors.reset}`);
+      }
       
       // Spawn the VM
       const processInfo = await ProcessManager.spawnDetached(config);
