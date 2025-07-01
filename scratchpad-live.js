@@ -255,20 +255,23 @@ echo $!
       
       // Create overlay disk based on base image
       try {
+        // Check if overlay already exists (cleanup from previous crash)
+        try {
+          await fs.unlink(overlayPath);
+        } catch {}
+        
         const createCmd = `qemu-img create -f qcow2 -b ${baseDiskPath} -F qcow2 ${overlayPath}`;
         execSync(createCmd, { stdio: 'pipe' });
         
-        // Store overlay path for cleanup
+        // Store overlay path in config for later cleanup
         config.overlayPath = overlayPath;
         
         diskArgs = ['-drive', `file=${overlayPath},format=qcow2,if=virtio`];
       } catch (err) {
-        // Fallback to snapshot mode if overlay creation fails
-        console.warn(`${colors.yellow}Warning: Could not create overlay disk, using snapshot mode${colors.reset}`);
-        diskArgs = ['-drive', `file=${baseDiskPath},format=qcow2,if=virtio,snapshot=on`];
+        throw new Error(`Failed to create overlay disk: ${err.message}`);
       }
     } else {
-      // Persistent mode - use base disk directly
+      // Persistent mode - use base disk directly (single VM only)
       diskArgs = ['-drive', `file=${baseDiskPath},format=qcow2,if=virtio`];
     }
     
@@ -285,10 +288,10 @@ echo $!
       ...diskArgs,
     ];
     
-    // Add cloud-init if available
+    // Add cloud-init if available (read-only since it's shared)
     try {
       await fs.access(cloudInitPath);
-      cmd.push('-drive', `file=${cloudInitPath},format=raw,if=virtio`);
+      cmd.push('-drive', `file=${cloudInitPath},format=raw,if=virtio,readonly=on`);
     } catch {}
     
     // Network
@@ -384,11 +387,11 @@ echo $!
       
       // Clean up overlay disk if ephemeral
       if (vm.diskMode === 'ephemeral') {
-        const overlayPath = path.join(CONFIG.baseDir, 'overlays', `${vm.name}.qcow2`);
+        const overlayPath = vm.overlayPath || path.join(CONFIG.baseDir, 'overlays', `${vm.name}.qcow2`);
         try {
           await fs.unlink(overlayPath);
         } catch (err) {
-          // Overlay might not exist if using snapshot mode
+          // Overlay might not exist
         }
       }
     }
@@ -615,6 +618,23 @@ class ScratchpadLiveCLI {
       return 1;
     }
     
+    // Check for persistent mode conflicts
+    if (config.diskMode === 'persistent') {
+      const vms = await this.registry.list();
+      const persistentVMs = vms.filter(vm => 
+        vm.baseVm === config.baseVm && 
+        vm.diskMode === 'persistent' && 
+        (vm.status === 'running' || vm.status === 'starting')
+      );
+      
+      if (persistentVMs.length > 0) {
+        this.error(`Cannot spawn VM in persistent mode: another persistent VM is using base '${config.baseVm}'`);
+        console.log(`Running persistent VMs: ${persistentVMs.map(vm => vm.name).join(', ')}`);
+        console.log(`Use ephemeral mode (default) to run multiple VMs from the same base`);
+        return 1;
+      }
+    }
+    
     try {
       console.log(`${colors.blue}Spawning VM '${config.name}'...${colors.reset}`);
       
@@ -646,6 +666,7 @@ class ScratchpadLiveCLI {
         lastVerified: processInfo.startedAt,
         memory: config.memory,
         diskMode: config.diskMode,
+        overlayPath: config.overlayPath,  // Store overlay path
         logFile: processInfo.logFile,
         workDir: config.workDir
       };
@@ -685,6 +706,13 @@ class ScratchpadLiveCLI {
       try {
         await this.registry.unregister(config.name);
       } catch {}
+      
+      // Clean up overlay disk if created
+      if (config.diskMode === 'ephemeral' && config.overlayPath) {
+        try {
+          await fs.unlink(config.overlayPath);
+        } catch {}
+      }
       
       return 1;
     }
@@ -969,6 +997,56 @@ class ScratchpadLiveCLI {
     return 0;
   }
 
+  async logs(args) {
+    const name = args.find(arg => !arg.startsWith('-'));
+    const follow = args.includes('--follow') || args.includes('-f');
+    const lines = args.includes('--lines') ? parseInt(args[args.indexOf('--lines') + 1]) : 50;
+    
+    if (!name) {
+      this.error('Usage: scratchpad-live logs <name> [--follow]');
+      return 1;
+    }
+    
+    const vm = await this.registry.get(name);
+    if (!vm) {
+      this.error(`VM '${name}' not found`);
+      return 1;
+    }
+    
+    const logFile = vm.logFile;
+    
+    try {
+      if (follow) {
+        // Use tail -f for following
+        console.log(`${colors.blue}Following logs for '${name}'... (Ctrl+C to stop)${colors.reset}\n`);
+        
+        return new Promise((resolve) => {
+          const tail = spawn('tail', ['-f', '-n', lines.toString(), logFile], {
+            stdio: 'inherit'
+          });
+          
+          tail.on('exit', (code) => {
+            resolve(code || 0);
+          });
+          
+          process.on('SIGINT', () => {
+            tail.kill('SIGTERM');
+          });
+        });
+      } else {
+        // Read last N lines
+        const content = await fs.readFile(logFile, 'utf8');
+        const allLines = content.split('\n');
+        const lastLines = allLines.slice(-lines).join('\n');
+        console.log(lastLines);
+        return 0;
+      }
+    } catch (err) {
+      this.error(`Failed to read logs: ${err.message}`);
+      return 1;
+    }
+  }
+
   async clean(args) {
     const force = args.includes('--force');
     
@@ -977,6 +1055,7 @@ class ScratchpadLiveCLI {
       console.log('  - Stopped VMs from registry');
       console.log('  - Orphaned PID files');
       console.log('  - Old log files');
+      console.log('  - Unused overlay disks');
       console.log('\nProceed? (y/N)');
       // TODO: Implement confirmation
       return 0;
@@ -989,6 +1068,15 @@ class ScratchpadLiveCLI {
     for (const vm of stopped) {
       await this.registry.unregister(vm.name);
       console.log(`Removed '${vm.name}' from registry`);
+      
+      // Clean up overlay disk if ephemeral
+      if (vm.diskMode === 'ephemeral') {
+        const overlayPath = vm.overlayPath || path.join(CONFIG.baseDir, 'overlays', `${vm.name}.qcow2`);
+        try {
+          await fs.unlink(overlayPath);
+          console.log(`Removed overlay disk for '${vm.name}'`);
+        } catch {}
+      }
     }
     
     // Clean orphaned PID files
@@ -1001,6 +1089,23 @@ class ScratchpadLiveCLI {
           if (!vm) {
             await fs.unlink(path.join(CONFIG.pidDir, file));
             console.log(`Removed orphaned PID file: ${file}`);
+          }
+        }
+      }
+    } catch {}
+    
+    // Clean orphaned overlay disks
+    try {
+      const overlayDir = path.join(CONFIG.baseDir, 'overlays');
+      const overlayFiles = await fs.readdir(overlayDir);
+      
+      for (const file of overlayFiles) {
+        if (file.endsWith('.qcow2')) {
+          const name = file.replace('.qcow2', '');
+          const vm = await this.registry.get(name);
+          if (!vm) {
+            await fs.unlink(path.join(overlayDir, file));
+            console.log(`Removed orphaned overlay disk: ${file}`);
           }
         }
       }
@@ -1139,6 +1244,10 @@ async function main() {
       exitCode = await cli.health(commandArgs);
       break;
     
+    case 'logs':
+      exitCode = await cli.logs(commandArgs);
+      break;
+    
     case 'clean':
       exitCode = await cli.clean(commandArgs);
       break;
@@ -1162,6 +1271,7 @@ ${colors.blue}Usage:${colors.reset}
   scratchpad-live connect <name>                         Connect to VM
   scratchpad-live stop <name> [--force] [--all]         Stop VM(s)
   scratchpad-live info <name>                           Show VM details
+  scratchpad-live logs <name> [--follow] [--lines n]    View VM logs
   scratchpad-live health [--fix]                         Check VM health
   scratchpad-live clean [--force]                       Clean up resources
 
