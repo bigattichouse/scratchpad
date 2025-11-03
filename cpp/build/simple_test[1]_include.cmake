@@ -1,0 +1,5 @@
+if(EXISTS "/home/bigattichouse/workspace/scratchpad/cpp/build/simple_test[1]_tests.cmake")
+  include("/home/bigattichouse/workspace/scratchpad/cpp/build/simple_test[1]_tests.cmake")
+else()
+  add_test(simple_test_NOT_BUILT simple_test_NOT_BUILT)
+endif()

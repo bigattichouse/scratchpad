@@ -1,0 +1,1 @@
+/usr/bin/c++ -g -O0 -Wall -Wextra -Wpedantic CMakeFiles/simple_test.dir/tests/unit/simple_test.cpp.o -o simple_test  lib/libgtest_main.a lib/libgtest.a 

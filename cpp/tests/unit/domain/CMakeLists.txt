@@ -41,3 +41,17 @@ target_link_libraries(test_communication_domain PRIVATE
 )
 
 gtest_discover_tests(test_communication_domain)
+
+# Configuration and Error Handling tests
+add_executable(test_config_and_errors
+    test_configuration.cpp
+    test_errors.cpp
+)
+
+target_link_libraries(test_config_and_errors PRIVATE
+    test_utils
+    scratchpad_lib
+    gtest_main
+)
+
+gtest_discover_tests(test_config_and_errors)

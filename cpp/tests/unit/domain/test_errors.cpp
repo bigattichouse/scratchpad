@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include "scratchpad/errors.hpp"
 #include "utils/test_helpers.hpp"
 

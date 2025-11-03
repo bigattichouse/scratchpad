@@ -4,6 +4,10 @@
 #include <filesystem>
 #include <memory>
 #include <vector>
+#include <chrono>
+#include <thread>
+#include <set>
+#include <unordered_map>
 
 namespace scratchpad::test {
 
@@ -55,6 +59,11 @@ public:
     
     // Find an available port in a range
     static int find_available_port(int start_port = 2222, int end_port = 9999);
+    
+    // Get test configuration from environment variables
+    static std::string get_test_temp_dir();
+    static int get_test_ssh_port_start();
+    static int get_test_timeout_ms();
 };
 
 // RAII helper for environment variables

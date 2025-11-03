@@ -32,10 +32,8 @@ tests/
 │   │   └── test_errors.cpp           # Error hierarchy & handling
 │   └── application/            # Application layer tests
 │       └── test_vm_manager.cpp      # VM management orchestration
-└── integration/                # Integration tests (future)
-    ├── test_cli_commands.cpp        # CLI interface testing
-    ├── test_vm_lifecycle.cpp        # End-to-end VM workflows
-    └── test_file_operations.cpp     # File transfer operations
+└── integration/                # Integration tests (planned for future implementation)
+    └── (planned: CLI interface, VM workflows, file operations)
 ```
 
 ## Test Categories

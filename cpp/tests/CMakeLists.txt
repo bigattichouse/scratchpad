@@ -25,8 +25,8 @@ target_include_directories(test_utils PUBLIC
 # Unit tests
 add_subdirectory(unit)
 
-# Integration tests
-add_subdirectory(integration)
+# Integration tests (planned for future implementation)
+# add_subdirectory(integration)
 
 # Enable CTest integration
 enable_testing()

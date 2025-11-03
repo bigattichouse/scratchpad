@@ -13,7 +13,8 @@ namespace scratchpad::test {
 
 // TempDirectory implementation
 TempDirectory::TempDirectory() {
-    path_ = std::filesystem::temp_directory_path() / ("scratchpad_test_" + TestHelpers::random_string(8));
+    auto base_dir = std::filesystem::path(TestHelpers::get_test_temp_dir());
+    path_ = base_dir / ("scratchpad_test_" + TestHelpers::random_string(8));
     std::filesystem::create_directories(path_);
 }
 
@@ -59,15 +60,18 @@ std::pair<std::string, std::string> TestHelpers::create_temp_ssh_keys(const std:
     auto private_key_path = dir / "test_rsa";
     auto public_key_path = dir / "test_rsa.pub";
     
-    // Create minimal test SSH keys (these are not secure, only for testing)
+    // Create dummy test SSH keys (THESE ARE NOT REAL KEYS - for testing only)
+    // These are intentionally invalid key formats to prevent misuse
     std::ofstream private_key(private_key_path);
-    private_key << "-----BEGIN OPENSSH PRIVATE KEY-----\n"
-                << "b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAFwAAAAdzc2gtcn\n"
-                << "NhAAAAAwEAAQAAAQEA1234567890abcdefghijklmnopqrstuvwxyz\n"
-                << "-----END OPENSSH PRIVATE KEY-----\n";
+    private_key << "-----BEGIN TEST PRIVATE KEY-----\n"
+                << "THIS IS A DUMMY TEST KEY FILE\n"
+                << "NOT A REAL SSH PRIVATE KEY\n"
+                << "GENERATED FOR UNIT TESTING ONLY\n"
+                << "Random data: " << random_string(64) << "\n"
+                << "-----END TEST PRIVATE KEY-----\n";
     
     std::ofstream public_key(public_key_path);
-    public_key << "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDU1234567890abcdefghijklmnopqrstuvwxyz test@scratchpad\n";
+    public_key << "test-key-type DUMMY_KEY_DATA_" << random_string(32) << " test@scratchpad-unittest\n";
     
     return {private_key_path.string(), public_key_path.string()};
 }
@@ -96,6 +100,30 @@ int TestHelpers::find_available_port(int start_port, int end_port) {
         }
     }
     return -1;
+}
+
+std::string TestHelpers::get_test_temp_dir() {
+    const char* env_dir = std::getenv("SCRATCHPAD_TEST_TEMP_DIR");
+    if (env_dir) {
+        return std::string(env_dir);
+    }
+    return std::filesystem::temp_directory_path().string();
+}
+
+int TestHelpers::get_test_ssh_port_start() {
+    const char* env_port = std::getenv("SCRATCHPAD_TEST_SSH_PORT_START");
+    if (env_port) {
+        return std::stoi(env_port);
+    }
+    return 3000; // Default test port range
+}
+
+int TestHelpers::get_test_timeout_ms() {
+    const char* env_timeout = std::getenv("SCRATCHPAD_TEST_TIMEOUT_MS");
+    if (env_timeout) {
+        return std::stoi(env_timeout);
+    }
+    return 30000; // 30 seconds default
 }
 
 // ScopedEnvVar implementation

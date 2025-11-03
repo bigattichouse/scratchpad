@@ -6,5 +6,5 @@ add_subdirectory(domain)
 # Application tests  
 add_subdirectory(application)
 
-# Infrastructure tests
-add_subdirectory(infrastructure)
+# Infrastructure tests (planned for future implementation)
+# add_subdirectory(infrastructure)

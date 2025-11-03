@@ -1,0 +1,7 @@
+add_test([=[SimpleTest.BasicAssertions]=]  /home/bigattichouse/workspace/scratchpad/cpp/build/simple_test [==[--gtest_filter=SimpleTest.BasicAssertions]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[SimpleTest.BasicAssertions]=]  PROPERTIES WORKING_DIRECTORY /home/bigattichouse/workspace/scratchpad/cpp/build SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test([=[SimpleTest.StringOperations]=]  /home/bigattichouse/workspace/scratchpad/cpp/build/simple_test [==[--gtest_filter=SimpleTest.StringOperations]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[SimpleTest.StringOperations]=]  PROPERTIES WORKING_DIRECTORY /home/bigattichouse/workspace/scratchpad/cpp/build SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+add_test([=[SimpleTest.ContainerOperations]=]  /home/bigattichouse/workspace/scratchpad/cpp/build/simple_test [==[--gtest_filter=SimpleTest.ContainerOperations]==] --gtest_also_run_disabled_tests)
+set_tests_properties([=[SimpleTest.ContainerOperations]=]  PROPERTIES WORKING_DIRECTORY /home/bigattichouse/workspace/scratchpad/cpp/build SKIP_REGULAR_EXPRESSION [==[\[  SKIPPED \]]==])
+set(  simple_test_TESTS SimpleTest.BasicAssertions SimpleTest.StringOperations SimpleTest.ContainerOperations)
