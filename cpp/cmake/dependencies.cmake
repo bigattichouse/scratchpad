@@ -73,6 +73,14 @@ else()
     message(FATAL_ERROR "libcurl not found. Please install libcurl development package.")
 endif()
 
+# Check for OpenSSL
+find_package(OpenSSL REQUIRED)
+if(OPENSSL_FOUND)
+    message(STATUS "Found OpenSSL: ${OPENSSL_VERSION}")
+else()
+    message(FATAL_ERROR "OpenSSL not found. Please install OpenSSL development package.")
+endif()
+
 # Platform-specific dependencies
 if(WIN32)
     # Windows-specific libraries
@@ -97,6 +105,8 @@ target_link_libraries(scratchpad_deps INTERFACE
     nlohmann_json::nlohmann_json
     ssh
     CURL::libcurl
+    OpenSSL::SSL
+    OpenSSL::Crypto
     Threads::Threads
     ${PLATFORM_LIBS}
 )
