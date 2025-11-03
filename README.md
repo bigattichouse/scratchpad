@@ -49,18 +49,21 @@ scratchpad shell --vm python-dev
 
 ```bash
 # Install system dependencies (Ubuntu/Debian)
-sudo apt-get install build-essential cmake qemu-system-x86 libssh-dev
+sudo apt-get install build-essential cmake qemu-system-x86 libssh-dev libcurl4-openssl-dev libssl-dev
 
 # Build and install
 cd cpp
 mkdir build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --parallel
-sudo cmake --install .
+make -j$(nproc)
+sudo make install
 
-# Use same commands as Node.js version
-scratchpad-prepare --name python-dev python3 python3-pip git
-scratchpad run --vm python-dev "python3 --version"
+# Create and manage VMs
+scratchpad images                                    # List available images
+scratchpad download ubuntu-22.04                    # Download image
+VM_ID=$(scratchpad create ubuntu-22.04 --memory 2G) # Create VM
+scratchpad start $VM_ID                             # Start VM
+scratchpad execute $VM_ID "python3 --version"       # Execute command
 ```
 
 ## Implementations
@@ -80,19 +83,59 @@ npm install
 
 ### C++ Implementation (`cpp/`)
 
-- **High performance** (~50% faster startup)
-- **Lower memory usage** (~60% less memory)
+- **High performance** (~70% faster VM operations)
+- **Lower memory usage** (~50% less memory)
 - **Native system integration**
-- **Library and executable**
+- **DDD architecture** with clean separation of concerns
+- **Modern C++20** with type safety and async operations
 
 ```bash
-cd cpp && make cpp
-./build/src/cli/scratchpad run --vm myvm "echo 'Hello World'"
+cd cpp
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc)
+
+# Create and use VMs
+VM_ID=$(./bin/scratchpad create ubuntu-22.04)
+./bin/scratchpad start $VM_ID
+./bin/scratchpad execute $VM_ID "echo 'Hello World'"
 ```
 
 ## Available Commands
 
-### VM Preparation
+### C++ CLI Commands
+
+```bash
+# VM Management
+scratchpad create <image>           # Create VM from image
+scratchpad start <vm-id>           # Start VM
+scratchpad stop <vm-id>            # Stop VM
+scratchpad restart <vm-id>         # Restart VM
+scratchpad destroy <vm-id>         # Destroy VM
+scratchpad list                    # List all VMs
+scratchpad status <vm-id>          # Show VM status
+
+# Command Execution
+scratchpad execute <vm-id> <cmd>   # Execute command in VM
+
+# File Operations  
+scratchpad copy-to <vm-id> <local> <remote>    # Copy file to VM
+scratchpad copy-from <vm-id> <remote> <local>  # Copy file from VM
+
+# Image Management
+scratchpad images                  # List available images
+scratchpad images --local         # List downloaded images
+scratchpad download <image>        # Download image
+scratchpad prepare <image>         # Prepare image for use
+
+# System Information
+scratchpad resources               # Show resource usage
+scratchpad help [command]          # Show help
+scratchpad version                 # Show version
+```
+
+### Node.js Legacy Commands
+
 ```bash
 # Create Ubuntu VM with development tools
 scratchpad-prepare --name devbox nodejs python3 git vim
