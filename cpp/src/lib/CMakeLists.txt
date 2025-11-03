@@ -24,6 +24,12 @@ set(SCRATCHPAD_LIB_SOURCES
     # Infrastructure layer
     infrastructure/qemu/qemu_adapter.cpp
     infrastructure/ssh/ssh_client.cpp
+    
+    # Application services
+    application/vm_manager_impl.cpp
+    application/image_manager_impl.cpp
+    application/resource_manager_impl.cpp
+    service_factory.cpp
 )
 
 set(SCRATCHPAD_LIB_HEADERS
@@ -49,6 +55,12 @@ set(SCRATCHPAD_LIB_HEADERS
     # Core headers (private)
     config/configuration.hpp
     logging/logger.hpp
+    
+    # Application service headers (private)
+    application/vm_manager_impl.hpp
+    application/image_manager_impl.hpp
+    application/resource_manager_impl.hpp
+    service_factory.hpp
 )
 
 # Create the library
