@@ -9,7 +9,7 @@ add_executable(test_vm_domain
 
 target_link_libraries(test_vm_domain PRIVATE
     test_utils
-    scratchpad_lib
+    scratchpad_static
     gtest_main
 )
 
@@ -22,7 +22,7 @@ add_executable(test_process_domain
 
 target_link_libraries(test_process_domain PRIVATE
     test_utils
-    scratchpad_lib
+    scratchpad_static
     gtest_main
 )
 
@@ -36,7 +36,7 @@ add_executable(test_communication_domain
 
 target_link_libraries(test_communication_domain PRIVATE
     test_utils
-    scratchpad_lib
+    scratchpad_static
     gtest_main
 )
 
@@ -50,7 +50,7 @@ add_executable(test_config_and_errors
 
 target_link_libraries(test_config_and_errors PRIVATE
     test_utils
-    scratchpad_lib
+    scratchpad_static
     gtest_main
 )
 

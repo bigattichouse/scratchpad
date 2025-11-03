@@ -15,7 +15,7 @@ add_library(test_utils STATIC
 target_link_libraries(test_utils PUBLIC
     gtest
     gmock
-    scratchpad_lib
+    scratchpad_static
 )
 
 target_include_directories(test_utils PUBLIC

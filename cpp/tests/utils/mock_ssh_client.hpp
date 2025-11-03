@@ -1,34 +1,39 @@
 #pragma once
 
-#include "infrastructure/ssh/ssh_client.hpp"
+#include "scratchpad/infrastructure/ssh/ssh_client.hpp"
 #include <gmock/gmock.h>
 
 namespace scratchpad::test {
 
 class MockSSHClient : public SSHClient {
 public:
-    MOCK_METHOD(std::future<bool>, connect_async, 
-                (const std::string& host, int port, const std::string& username, 
-                 const std::string& private_key_path), (override));
+    MockSSHClient() : SSHClient() {}
+    
+    MOCK_METHOD(ConnectionResult, connect, 
+                (const ConnectionInfo& info), (override));
     
     MOCK_METHOD(void, disconnect, (), (override));
     
     MOCK_METHOD(bool, is_connected, (), (const, override));
     
+    MOCK_METHOD(CommandResult, execute_command, 
+                (const std::string& command), (override));
+                
+    MOCK_METHOD(CommandResult, execute_command, 
+                (const std::string& command, std::chrono::milliseconds timeout), (override));
+    
     MOCK_METHOD(std::future<CommandResult>, execute_command_async, 
                 (const std::string& command), (override));
     
-    MOCK_METHOD(std::future<bool>, upload_file_async, 
-                (const std::filesystem::path& local_path, 
-                 const std::filesystem::path& remote_path), (override));
+    MOCK_METHOD(FileTransferResult, upload_file, 
+                (const std::string& local_path, const std::string& remote_path), (override));
     
-    MOCK_METHOD(std::future<bool>, download_file_async, 
-                (const std::filesystem::path& remote_path, 
-                 const std::filesystem::path& local_path), (override));
-    
-    MOCK_METHOD(bool, test_connection, (), (override));
+    MOCK_METHOD(FileTransferResult, download_file, 
+                (const std::string& remote_path, const std::string& local_path), (override));
     
     MOCK_METHOD(std::string, get_last_error, (), (const, override));
+    
+    MOCK_METHOD(ConnectionState, get_connection_state, (), (const, override));
 };
 
 // Factory for creating mock SSH clients
@@ -41,25 +46,18 @@ public:
         ON_CALL(*mock, is_connected())
             .WillByDefault(testing::Return(false));
         
-        ON_CALL(*mock, test_connection())
-            .WillByDefault(testing::Return(true));
-        
         ON_CALL(*mock, get_last_error())
             .WillByDefault(testing::Return(""));
         
-        // Default successful command execution
-        CommandResult default_result;
-        default_result.exit_code = 0;
-        default_result.stdout = "";
-        default_result.stderr = "";
-        default_result.success = true;
+        // Default connection state
+        SSHClient::ConnectionState default_state;
+        default_state.status = SSHClient::ConnectionStatus::Disconnected;
+        default_state.host = "";
+        default_state.port = 0;
+        default_state.username = "";
         
-        auto future = std::async(std::launch::deferred, [default_result]() {
-            return default_result;
-        });
-        
-        ON_CALL(*mock, execute_command_async(testing::_))
-            .WillByDefault(testing::Return(testing::ByMove(std::move(future))));
+        ON_CALL(*mock, get_connection_state())
+            .WillByDefault(testing::Return(default_state));
         
         return mock;
     }
@@ -70,13 +68,12 @@ public:
         ON_CALL(*mock, is_connected())
             .WillByDefault(testing::Return(true));
         
-        // Return successful connection future
-        auto connect_future = std::async(std::launch::deferred, []() {
-            return true;
-        });
+        SSHClient::ConnectionResult success_result;
+        success_result.success = true;
+        success_result.status = SSHClient::ConnectionStatus::Connected;
         
-        ON_CALL(*mock, connect_async(testing::_, testing::_, testing::_, testing::_))
-            .WillByDefault(testing::Return(testing::ByMove(std::move(connect_future))));
+        ON_CALL(*mock, connect(testing::_))
+            .WillByDefault(testing::Return(success_result));
         
         return mock;
     }

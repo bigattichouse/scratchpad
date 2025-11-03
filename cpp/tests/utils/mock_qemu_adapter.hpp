@@ -1,40 +1,39 @@
 #pragma once
 
-#include "infrastructure/qemu/qemu_adapter.hpp"
+#include "scratchpad/infrastructure/qemu/qemu_adapter.hpp"
 #include <gmock/gmock.h>
 
 namespace scratchpad::test {
 
 class MockQemuAdapter : public QemuAdapter {
 public:
-    MOCK_METHOD(std::future<bool>, start_vm_async, 
+    MockQemuAdapter() : QemuAdapter() {}
+    
+    MOCK_METHOD(std::future<StartResult>, start_vm_async, 
                 (const VMConfiguration& config), (override));
     
     MOCK_METHOD(std::future<bool>, stop_vm_async, 
                 (const VMId& vm_id), (override));
     
+    MOCK_METHOD(std::future<bool>, destroy_vm_async, 
+                (const VMId& vm_id, bool force), (override));
+    
     MOCK_METHOD(bool, is_vm_running, 
                 (const VMId& vm_id), (const, override));
     
-    MOCK_METHOD(std::vector<VMId>, list_running_vms, 
-                (), (const, override));
-    
-    MOCK_METHOD(bool, create_vm_disk, 
-                (const std::filesystem::path& disk_path, const std::string& size), (override));
-    
-    MOCK_METHOD(bool, delete_vm_disk, 
-                (const std::filesystem::path& disk_path), (override));
-    
-    MOCK_METHOD(std::optional<int>, get_vm_ssh_port, 
+    MOCK_METHOD(VMStatus, get_vm_status, 
                 (const VMId& vm_id), (const, override));
     
-    MOCK_METHOD(ResourceUsage, get_vm_resource_usage, 
-                (const VMId& vm_id), (const, override));
+    MOCK_METHOD(bool, create_disk_image, 
+                (const std::filesystem::path& path, DiskSize size), (override));
     
-    MOCK_METHOD(bool, validate_qemu_installation, 
+    MOCK_METHOD(bool, clone_disk_image, 
+                (const std::filesystem::path& source, const std::filesystem::path& dest), (override));
+    
+    MOCK_METHOD(AccelerationType, detect_available_acceleration, 
                 (), (const, override));
     
-    MOCK_METHOD(std::string, get_qemu_version, 
+    MOCK_METHOD(bool, supports_nested_virtualization, 
                 (), (const, override));
 };
 
@@ -45,17 +44,14 @@ public:
         auto mock = std::make_unique<MockQemuAdapter>();
         
         // Set up default expectations for common calls
-        ON_CALL(*mock, validate_qemu_installation())
+        ON_CALL(*mock, supports_nested_virtualization())
             .WillByDefault(testing::Return(true));
-        
-        ON_CALL(*mock, get_qemu_version())
-            .WillByDefault(testing::Return("QEMU emulator version 7.0.0 (mock)"));
         
         ON_CALL(*mock, is_vm_running(testing::_))
             .WillByDefault(testing::Return(false));
         
-        ON_CALL(*mock, list_running_vms())
-            .WillByDefault(testing::Return(std::vector<VMId>{}));
+        ON_CALL(*mock, detect_available_acceleration())
+            .WillByDefault(testing::Return(AccelerationType::KVM));
         
         return mock;
     }

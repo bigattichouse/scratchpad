@@ -38,6 +38,22 @@ FetchContent_MakeAvailable(googletest)
 # Include GoogleTest
 include(GoogleTest)
 
+# Create minimal stub library for testing
+add_library(scratchpad_static STATIC
+    tests/utils/test_helpers.cpp
+    tests/utils/temp_directory.cpp
+)
+
+target_include_directories(scratchpad_static PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/tests
+)
+
+target_compile_features(scratchpad_static PUBLIC cxx_std_20)
+
+# Add all tests
+add_subdirectory(tests)
+
 # Simple test executable
 add_executable(simple_test
     tests/unit/simple_test.cpp
