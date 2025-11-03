@@ -1,0 +1,18 @@
+@PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+# Find required dependencies
+find_dependency(Threads)
+find_dependency(PkgConfig)
+
+# Find libssh
+pkg_check_modules(LIBSSH REQUIRED libssh>=0.9.0)
+
+# Find libcurl
+find_dependency(CURL)
+
+# Include targets
+include("${CMAKE_CURRENT_LIST_DIR}/scratchpadTargets.cmake")
+
+check_required_components(scratchpad)
