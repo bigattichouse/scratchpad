@@ -17,6 +17,25 @@ This C++ implementation provides both a standalone executable and a linkable lib
 - **Multi-VM Support**: Run multiple VMs from same base image
 - **DDD Architecture**: Clean, maintainable code with clear domain boundaries
 
+## Testing
+
+This implementation includes a comprehensive test suite with **600+ test cases** covering:
+- Domain logic and business rules
+- Application service orchestration  
+- Error handling and edge cases
+- Concurrent operations and thread safety
+- Mock-based testing for external dependencies
+
+See [tests/README.md](tests/README.md) for detailed testing documentation.
+
+### Quick Test Run
+```bash
+cd cpp && mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTING=ON ..
+make -j$(nproc)
+ctest --verbose
+```
+
 ## Building
 
 ### Prerequisites
