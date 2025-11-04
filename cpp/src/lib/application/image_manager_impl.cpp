@@ -629,29 +629,29 @@ std::filesystem::path ImageManagerImpl::get_metadata_file_path() const {
 
 void ImageManagerImpl::validate_image_name(const std::string& image_name) {
     if (image_name.empty()) {
-        THROW_IMAGE_ERROR(ErrorCode::InvalidArgument, "Image name cannot be empty");
+        THROW_IMAGE_ERROR(ErrorCode::InvalidArgument, "Image name cannot be empty", "");
     }
     
     // Check for valid characters
     std::regex valid_name(R"(^[a-zA-Z0-9][a-zA-Z0-9._-]*$)");
     if (!std::regex_match(image_name, valid_name)) {
         THROW_IMAGE_ERROR(ErrorCode::InvalidArgument, 
-                         "Invalid image name format: " + image_name);
+                         "Invalid image name format: " + image_name, image_name);
     }
 }
 
 void ImageManagerImpl::validate_prepare_params(const PrepareParams& params) {
     if (params.disk_size.has_value() && params.disk_size.value().bytes < DiskSize::from_string("1G").bytes) {
         THROW_IMAGE_ERROR(ErrorCode::InvalidArgument, 
-                         "Minimum disk size for prepared image is 1GB");
+                         "Minimum disk size for prepared image is 1GB", "");
     }
 }
 
-void ImageManagerImpl::report_progress(const std::string& image_name, ProgressInfo info) {
+void ImageManagerImpl::report_progress(const std::string& image_name, const ProgressInfo& info) {
     std::lock_guard lock(callback_mutex_);
     if (progress_callback_) {
         try {
-            progress_callback_(image_name, info);
+            progress_callback_(image_name, info.bytes_downloaded, info.total_bytes, info.status_message);
         } catch (const std::exception& e) {
             logger_.error("Error in progress callback: {}", e.what());
         }

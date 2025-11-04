@@ -96,7 +96,7 @@ void VirtualMachine::set_process_id(ProcessId pid) {
 }
 
 void VirtualMachine::set_ssh_port(PortNumber port) {
-    if (port != 0 && (port < 1024 || port > 65535)) {
+    if (port != 0 && port < 1024) {
         THROW_VM_ERROR(ErrorCode::InvalidArgument,
                       "SSH port must be between 1024 and 65535",
                       config_.vm_id().value());
@@ -327,11 +327,11 @@ bool VirtualMachine::is_in_valid_state() const {
     }
     
     // Port numbers must be valid if set
-    if (allocated_ssh_port_ != 0 && (allocated_ssh_port_ < 1024 || allocated_ssh_port_ > 65535)) {
+    if (allocated_ssh_port_ != 0 && allocated_ssh_port_ < 1024) {
         return false;
     }
     
-    if (allocated_vnc_port_ != 0 && (allocated_vnc_port_ < 5900 || allocated_vnc_port_ > 5999)) {
+    if (allocated_vnc_port_ != 0 && allocated_vnc_port_ < 5900) {
         return false;
     }
     

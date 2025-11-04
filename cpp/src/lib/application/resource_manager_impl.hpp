@@ -1,7 +1,7 @@
 #pragma once
 
 #include "scratchpad/resource_manager.hpp"
-#include "logging/logger.hpp"
+#include "../logging/logger.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -48,19 +48,25 @@ public:
 
 private:
     struct PortAllocation {
-        PortNumber port;
+        PortNumber port = 0;
         std::string vm_id;
         std::chrono::system_clock::time_point allocated_at;
+        
+        // Default constructor
+        PortAllocation() = default;
         
         PortAllocation(PortNumber p, const std::string& id)
             : port(p), vm_id(id), allocated_at(std::chrono::system_clock::now()) {}
     };
     
     struct MemoryAllocation {
-        void* ptr;
-        size_t size;
+        void* ptr = nullptr;
+        size_t size = 0;
         std::string purpose;
         std::chrono::system_clock::time_point allocated_at;
+        
+        // Default constructor
+        MemoryAllocation() = default;
         
         MemoryAllocation(void* p, size_t s, const std::string& purpose)
             : ptr(p), size(s), purpose(purpose), allocated_at(std::chrono::system_clock::now()) {}

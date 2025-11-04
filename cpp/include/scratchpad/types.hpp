@@ -141,6 +141,12 @@ struct ResourceUsage {
     uint64_t network_tx_bytes = 0;
     uint32_t active_processes = 0;
     std::vector<PortNumber> allocated_ports;
+    
+    // Implementation compatibility fields
+    uint32_t running_vms = 0;
+    uint32_t total_vms = 0;
+    uint64_t allocated_memory = 0;
+    uint64_t allocated_disk = 0;
 };
 
 // Health check results
@@ -171,6 +177,49 @@ struct SystemLimits {
 
 // Package management
 using PackageList = std::vector<std::string>;
+
+// Image management types
+struct ImageInfo {
+    std::string name;
+    ImageType type;
+    std::string description;
+    DiskSize size;
+    bool is_available = false;
+    bool is_local = false;
+    std::string checksum;
+    std::string url;
+    std::string version;
+    std::chrono::system_clock::time_point created_at;
+    std::chrono::system_clock::time_point last_modified;
+    std::string architecture;
+    std::string os_family;
+    bool is_downloaded = false;
+    bool is_prepared = false;
+    std::string local_path;
+};
+
+struct OverlayDisk {
+    std::string name;
+    std::string path;
+    DiskSize size;
+    std::string base_image;
+    std::chrono::system_clock::time_point created_at;
+    bool is_active = false;
+};
+
+struct ProgressInfo {
+    size_t bytes_downloaded = 0;
+    size_t total_bytes = 0;
+    std::string status_message;
+    double progress_percent = 0.0;
+    
+    // Convenience constructor
+    ProgressInfo(double percent, const std::string& message) 
+        : status_message(message), progress_percent(percent) {}
+    
+    // Default constructor
+    ProgressInfo() = default;
+};
 
 // SSH credentials and configuration
 struct SSHCredentials {

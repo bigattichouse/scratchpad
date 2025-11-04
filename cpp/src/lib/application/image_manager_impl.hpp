@@ -1,7 +1,8 @@
 #pragma once
 
-#include "scratchpad/image_manager.hpp"
-#include "logging/logger.hpp"
+// #include "scratchpad/image_manager.hpp" // No longer needed since we don't inherit
+#include "scratchpad/types.hpp"
+#include "../logging/logger.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -11,34 +12,54 @@
 
 namespace scratchpad {
 
-class ImageManagerImpl : public ImageManager {
+class ImageManagerImpl {
 public:
+    // Progress callback for long-running operations
+    using ProgressCallback = std::function<void(const std::string& operation, 
+                                                size_t current, 
+                                                size_t total,
+                                                const std::string& message)>;
+    
+    // Image preparation parameters
+    struct PrepareParams {
+        std::string name;
+        ImageType base_image;
+        ProvisioningConfig config;
+        MemoryAmount build_memory = MemoryAmount::gigabytes(1);
+        std::chrono::milliseconds timeout{1800000}; // 30 minutes
+        bool cleanup_on_failure = true;
+        std::optional<DiskSize> disk_size;
+        std::string user_data;
+        std::string network_config;
+        std::vector<std::string> ssh_public_keys;
+    };
+
     ImageManagerImpl();
-    ~ImageManagerImpl() override = default;
+    ~ImageManagerImpl() = default;
 
     // Image Discovery and Management
-    std::vector<ImageInfo> list_available_images() override;
-    std::vector<ImageInfo> list_local_images() override;
-    ImageInfo get_image_info(const std::string& image_name) override;
-    bool is_image_available(const std::string& image_name) override;
+    std::vector<ImageInfo> list_available_images();
+    std::vector<ImageInfo> list_local_images();
+    ImageInfo get_image_info(const std::string& image_name);
+    bool is_image_available(const std::string& image_name);
 
     // Image Download and Caching
-    void download_image(const std::string& image_name) override;
-    std::future<void> download_image_async(const std::string& image_name) override;
-    void remove_image(const std::string& image_name) override;
+    void download_image(const std::string& image_name);
+    std::future<void> download_image_async(const std::string& image_name);
+    void remove_image(const std::string& image_name);
 
     // Image Creation and Preparation
-    void prepare_image(const std::string& image_name, const PrepareParams& params) override;
-    std::future<void> prepare_image_async(const std::string& image_name, const PrepareParams& params) override;
+    void prepare_image(const std::string& image_name, const PrepareParams& params);
+    std::future<void> prepare_image_async(const std::string& image_name, const PrepareParams& params);
 
     // Progress Monitoring
-    void set_progress_callback(ProgressCallback callback) override;
-    void remove_progress_callback() override;
+    void set_progress_callback(ProgressCallback callback);
+    void remove_progress_callback();
 
     // Cache Management
-    DiskSize get_cache_size() override;
-    void clear_cache() override;
-    void set_cache_limit(DiskSize limit) override;
+    DiskSize get_cache_size();
+    void clear_cache();
+    void set_cache_limit(DiskSize limit);
 
 private:
     struct ImageMetadata {
@@ -93,7 +114,7 @@ private:
     void validate_prepare_params(const PrepareParams& params);
 
     // Progress reporting
-    void report_progress(const std::string& image_name, ProgressInfo info);
+    void report_progress(const std::string& image_name, const ProgressInfo& info);
 
     // Default image registry
     void initialize_default_registry();

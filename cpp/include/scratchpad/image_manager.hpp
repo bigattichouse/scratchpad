@@ -52,24 +52,56 @@ public:
         MemoryAmount build_memory = MemoryAmount::gigabytes(1);
         std::chrono::milliseconds timeout{1800000}; // 30 minutes
         bool cleanup_on_failure = true;
+        std::optional<DiskSize> disk_size;
+        std::string user_data;
+        std::string network_config;
     };
 
 public:
     /**
      * Construct ImageManager with specified options
      */
-    explicit ImageManager(const Options& options = {});
+    explicit ImageManager(const Options& options);
     
     /**
      * Destructor
      */
-    ~ImageManager();
+    virtual ~ImageManager();
 
     // Non-copyable, movable
     ImageManager(const ImageManager&) = delete;
     ImageManager& operator=(const ImageManager&) = delete;
     ImageManager(ImageManager&&) noexcept;
     ImageManager& operator=(ImageManager&&) noexcept;
+
+    // ========== Image Information ==========
+    
+    /**
+     * List all available images
+     * @return Vector of available image information
+     */
+    virtual std::vector<ImageInfo> list_available_images() = 0;
+    
+    /**
+     * List locally cached images
+     * @return Vector of local image information
+     */
+    virtual std::vector<ImageInfo> list_local_images() = 0;
+    
+    /**
+     * Get detailed information about a specific image
+     * @param image_name Name of the image
+     * @return Image information
+     * @throws ImageError if image not found
+     */
+    virtual ImageInfo get_image_info(const std::string& image_name) = 0;
+    
+    /**
+     * Check if an image is available for download
+     * @param image_name Name of the image
+     * @return true if available
+     */
+    virtual bool is_image_available(const std::string& image_name) = 0;
 
     // ========== Base Image Management ==========
 
@@ -79,7 +111,7 @@ public:
      * @param force_redownload Force redownload even if present
      * @throws ImageError if download fails
      */
-    void download_base_image(ImageType type, bool force_redownload = false);
+    virtual void download_base_image(ImageType type, bool force_redownload = false);
 
     /**
      * Download base image asynchronously
