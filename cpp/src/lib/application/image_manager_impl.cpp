@@ -1,4 +1,4 @@
-#include "application/image_manager_impl.hpp"
+#include "image_manager_impl.hpp"
 #include "scratchpad/errors.hpp"
 
 #include <fstream>

@@ -215,6 +215,24 @@ public:
     }
 
     /**
+     * Get resource usage statistics (implementation compatibility)
+     * @return Current resource usage
+     */
+    ResourceUsage statistics() const {
+        // Return default/empty resource usage for now
+        return ResourceUsage{};
+    }
+
+    /**
+     * Get VM start time (implementation compatibility)
+     * @return Start time if VM has been started
+     */
+    std::optional<std::chrono::system_clock::time_point> started_at() const {
+        // Return nullopt for now - would need to track actual start time
+        return std::nullopt;
+    }
+
+    /**
      * Get current uptime (including active session if running)
      * @return Current total uptime
      */

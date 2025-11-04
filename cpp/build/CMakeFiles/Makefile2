@@ -63,17 +63,22 @@ CMAKE_BINARY_DIR = /home/bigattichouse/workspace/scratchpad/cpp/build
 # Directory level rules for the build root directory
 
 # The main recursive "all" target.
+all: CMakeFiles/scratchpad_static.dir/all
 all: CMakeFiles/simple_test.dir/all
 all: _deps/googletest-build/all
+all: tests/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
 preinstall: _deps/googletest-build/preinstall
+preinstall: tests/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
+clean: CMakeFiles/scratchpad_static.dir/clean
 clean: CMakeFiles/simple_test.dir/clean
 clean: _deps/googletest-build/clean
+clean: tests/clean
 .PHONY : clean
 
 #=============================================================================
@@ -128,6 +133,127 @@ _deps/googletest-build/googletest/clean: _deps/googletest-build/googletest/CMake
 .PHONY : _deps/googletest-build/googletest/clean
 
 #=============================================================================
+# Directory level rules for directory tests
+
+# Recursive "all" directory target.
+tests/all: tests/CMakeFiles/test_utils.dir/all
+tests/all: tests/unit/all
+.PHONY : tests/all
+
+# Recursive "preinstall" directory target.
+tests/preinstall: tests/unit/preinstall
+.PHONY : tests/preinstall
+
+# Recursive "clean" directory target.
+tests/clean: tests/CMakeFiles/test_utils.dir/clean
+tests/clean: tests/unit/clean
+.PHONY : tests/clean
+
+#=============================================================================
+# Directory level rules for directory tests/unit
+
+# Recursive "all" directory target.
+tests/unit/all: tests/unit/domain/all
+tests/unit/all: tests/unit/application/all
+tests/unit/all: tests/unit/infrastructure/all
+.PHONY : tests/unit/all
+
+# Recursive "preinstall" directory target.
+tests/unit/preinstall: tests/unit/domain/preinstall
+tests/unit/preinstall: tests/unit/application/preinstall
+tests/unit/preinstall: tests/unit/infrastructure/preinstall
+.PHONY : tests/unit/preinstall
+
+# Recursive "clean" directory target.
+tests/unit/clean: tests/unit/domain/clean
+tests/unit/clean: tests/unit/application/clean
+tests/unit/clean: tests/unit/infrastructure/clean
+.PHONY : tests/unit/clean
+
+#=============================================================================
+# Directory level rules for directory tests/unit/application
+
+# Recursive "all" directory target.
+tests/unit/application/all: tests/unit/application/CMakeFiles/test_vm_manager.dir/all
+tests/unit/application/all: tests/unit/application/CMakeFiles/test_image_manager.dir/all
+tests/unit/application/all: tests/unit/application/CMakeFiles/test_resource_manager.dir/all
+.PHONY : tests/unit/application/all
+
+# Recursive "preinstall" directory target.
+tests/unit/application/preinstall:
+.PHONY : tests/unit/application/preinstall
+
+# Recursive "clean" directory target.
+tests/unit/application/clean: tests/unit/application/CMakeFiles/test_vm_manager.dir/clean
+tests/unit/application/clean: tests/unit/application/CMakeFiles/test_image_manager.dir/clean
+tests/unit/application/clean: tests/unit/application/CMakeFiles/test_resource_manager.dir/clean
+.PHONY : tests/unit/application/clean
+
+#=============================================================================
+# Directory level rules for directory tests/unit/domain
+
+# Recursive "all" directory target.
+tests/unit/domain/all: tests/unit/domain/CMakeFiles/test_vm_domain.dir/all
+tests/unit/domain/all: tests/unit/domain/CMakeFiles/test_process_domain.dir/all
+tests/unit/domain/all: tests/unit/domain/CMakeFiles/test_communication_domain.dir/all
+tests/unit/domain/all: tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all
+.PHONY : tests/unit/domain/all
+
+# Recursive "preinstall" directory target.
+tests/unit/domain/preinstall:
+.PHONY : tests/unit/domain/preinstall
+
+# Recursive "clean" directory target.
+tests/unit/domain/clean: tests/unit/domain/CMakeFiles/test_vm_domain.dir/clean
+tests/unit/domain/clean: tests/unit/domain/CMakeFiles/test_process_domain.dir/clean
+tests/unit/domain/clean: tests/unit/domain/CMakeFiles/test_communication_domain.dir/clean
+tests/unit/domain/clean: tests/unit/domain/CMakeFiles/test_config_and_errors.dir/clean
+.PHONY : tests/unit/domain/clean
+
+#=============================================================================
+# Directory level rules for directory tests/unit/infrastructure
+
+# Recursive "all" directory target.
+tests/unit/infrastructure/all: tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all
+tests/unit/infrastructure/all: tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all
+.PHONY : tests/unit/infrastructure/all
+
+# Recursive "preinstall" directory target.
+tests/unit/infrastructure/preinstall:
+.PHONY : tests/unit/infrastructure/preinstall
+
+# Recursive "clean" directory target.
+tests/unit/infrastructure/clean: tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/clean
+tests/unit/infrastructure/clean: tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/clean
+.PHONY : tests/unit/infrastructure/clean
+
+#=============================================================================
+# Target rules for target CMakeFiles/scratchpad_static.dir
+
+# All Build rule for target.
+CMakeFiles/scratchpad_static.dir/all:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/depend
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=9,10,11,12,13,14,15,16,17,18,19,20 "Built target scratchpad_static"
+.PHONY : CMakeFiles/scratchpad_static.dir/all
+
+# Build rule for subdir invocation for target.
+CMakeFiles/scratchpad_static.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 12
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/scratchpad_static.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : CMakeFiles/scratchpad_static.dir/rule
+
+# Convenience name for target.
+scratchpad_static: CMakeFiles/scratchpad_static.dir/rule
+.PHONY : scratchpad_static
+
+# clean rule for target.
+CMakeFiles/scratchpad_static.dir/clean:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/clean
+.PHONY : CMakeFiles/scratchpad_static.dir/clean
+
+#=============================================================================
 # Target rules for target CMakeFiles/simple_test.dir
 
 # All Build rule for target.
@@ -135,7 +261,7 @@ CMakeFiles/simple_test.dir/all: _deps/googletest-build/googletest/CMakeFiles/gte
 CMakeFiles/simple_test.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_test.dir/build.make CMakeFiles/simple_test.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_test.dir/build.make CMakeFiles/simple_test.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=9,10 "Built target simple_test"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=21,22 "Built target simple_test"
 .PHONY : CMakeFiles/simple_test.dir/all
 
 # Build rule for subdir invocation for target.
@@ -258,6 +384,304 @@ gtest_main: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/rule
 _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean:
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean
 .PHONY : _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/clean
+
+#=============================================================================
+# Target rules for target tests/CMakeFiles/test_utils.dir
+
+# All Build rule for target.
+tests/CMakeFiles/test_utils.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/CMakeFiles/test_utils.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/CMakeFiles/test_utils.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_utils.dir/build.make tests/CMakeFiles/test_utils.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_utils.dir/build.make tests/CMakeFiles/test_utils.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=39,40,41,42,43 "Built target test_utils"
+.PHONY : tests/CMakeFiles/test_utils.dir/all
+
+# Build rule for subdir invocation for target.
+tests/CMakeFiles/test_utils.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 21
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/CMakeFiles/test_utils.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/CMakeFiles/test_utils.dir/rule
+
+# Convenience name for target.
+test_utils: tests/CMakeFiles/test_utils.dir/rule
+.PHONY : test_utils
+
+# clean rule for target.
+tests/CMakeFiles/test_utils.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_utils.dir/build.make tests/CMakeFiles/test_utils.dir/clean
+.PHONY : tests/CMakeFiles/test_utils.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/domain/CMakeFiles/test_vm_domain.dir
+
+# All Build rule for target.
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_vm_domain.dir/build.make tests/unit/domain/CMakeFiles/test_vm_domain.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_vm_domain.dir/build.make tests/unit/domain/CMakeFiles/test_vm_domain.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=44,45,46,47 "Built target test_vm_domain"
+.PHONY : tests/unit/domain/CMakeFiles/test_vm_domain.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 27
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/domain/CMakeFiles/test_vm_domain.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/domain/CMakeFiles/test_vm_domain.dir/rule
+
+# Convenience name for target.
+test_vm_domain: tests/unit/domain/CMakeFiles/test_vm_domain.dir/rule
+.PHONY : test_vm_domain
+
+# clean rule for target.
+tests/unit/domain/CMakeFiles/test_vm_domain.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_vm_domain.dir/build.make tests/unit/domain/CMakeFiles/test_vm_domain.dir/clean
+.PHONY : tests/unit/domain/CMakeFiles/test_vm_domain.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/domain/CMakeFiles/test_process_domain.dir
+
+# All Build rule for target.
+tests/unit/domain/CMakeFiles/test_process_domain.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/domain/CMakeFiles/test_process_domain.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/domain/CMakeFiles/test_process_domain.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/domain/CMakeFiles/test_process_domain.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/domain/CMakeFiles/test_process_domain.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_process_domain.dir/build.make tests/unit/domain/CMakeFiles/test_process_domain.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_process_domain.dir/build.make tests/unit/domain/CMakeFiles/test_process_domain.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=31,32 "Built target test_process_domain"
+.PHONY : tests/unit/domain/CMakeFiles/test_process_domain.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/domain/CMakeFiles/test_process_domain.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 25
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/domain/CMakeFiles/test_process_domain.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/domain/CMakeFiles/test_process_domain.dir/rule
+
+# Convenience name for target.
+test_process_domain: tests/unit/domain/CMakeFiles/test_process_domain.dir/rule
+.PHONY : test_process_domain
+
+# clean rule for target.
+tests/unit/domain/CMakeFiles/test_process_domain.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_process_domain.dir/build.make tests/unit/domain/CMakeFiles/test_process_domain.dir/clean
+.PHONY : tests/unit/domain/CMakeFiles/test_process_domain.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/domain/CMakeFiles/test_communication_domain.dir
+
+# All Build rule for target.
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_communication_domain.dir/build.make tests/unit/domain/CMakeFiles/test_communication_domain.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_communication_domain.dir/build.make tests/unit/domain/CMakeFiles/test_communication_domain.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=23,24,25 "Built target test_communication_domain"
+.PHONY : tests/unit/domain/CMakeFiles/test_communication_domain.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 26
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/domain/CMakeFiles/test_communication_domain.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/domain/CMakeFiles/test_communication_domain.dir/rule
+
+# Convenience name for target.
+test_communication_domain: tests/unit/domain/CMakeFiles/test_communication_domain.dir/rule
+.PHONY : test_communication_domain
+
+# clean rule for target.
+tests/unit/domain/CMakeFiles/test_communication_domain.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_communication_domain.dir/build.make tests/unit/domain/CMakeFiles/test_communication_domain.dir/clean
+.PHONY : tests/unit/domain/CMakeFiles/test_communication_domain.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/domain/CMakeFiles/test_config_and_errors.dir
+
+# All Build rule for target.
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_config_and_errors.dir/build.make tests/unit/domain/CMakeFiles/test_config_and_errors.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_config_and_errors.dir/build.make tests/unit/domain/CMakeFiles/test_config_and_errors.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=26,27,28 "Built target test_config_and_errors"
+.PHONY : tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 26
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/domain/CMakeFiles/test_config_and_errors.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/domain/CMakeFiles/test_config_and_errors.dir/rule
+
+# Convenience name for target.
+test_config_and_errors: tests/unit/domain/CMakeFiles/test_config_and_errors.dir/rule
+.PHONY : test_config_and_errors
+
+# clean rule for target.
+tests/unit/domain/CMakeFiles/test_config_and_errors.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_config_and_errors.dir/build.make tests/unit/domain/CMakeFiles/test_config_and_errors.dir/clean
+.PHONY : tests/unit/domain/CMakeFiles/test_config_and_errors.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/application/CMakeFiles/test_vm_manager.dir
+
+# All Build rule for target.
+tests/unit/application/CMakeFiles/test_vm_manager.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/application/CMakeFiles/test_vm_manager.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/application/CMakeFiles/test_vm_manager.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/application/CMakeFiles/test_vm_manager.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/application/CMakeFiles/test_vm_manager.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_vm_manager.dir/build.make tests/unit/application/CMakeFiles/test_vm_manager.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_vm_manager.dir/build.make tests/unit/application/CMakeFiles/test_vm_manager.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=48,49 "Built target test_vm_manager"
+.PHONY : tests/unit/application/CMakeFiles/test_vm_manager.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/application/CMakeFiles/test_vm_manager.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 25
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/application/CMakeFiles/test_vm_manager.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/application/CMakeFiles/test_vm_manager.dir/rule
+
+# Convenience name for target.
+test_vm_manager: tests/unit/application/CMakeFiles/test_vm_manager.dir/rule
+.PHONY : test_vm_manager
+
+# clean rule for target.
+tests/unit/application/CMakeFiles/test_vm_manager.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_vm_manager.dir/build.make tests/unit/application/CMakeFiles/test_vm_manager.dir/clean
+.PHONY : tests/unit/application/CMakeFiles/test_vm_manager.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/application/CMakeFiles/test_image_manager.dir
+
+# All Build rule for target.
+tests/unit/application/CMakeFiles/test_image_manager.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/application/CMakeFiles/test_image_manager.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/application/CMakeFiles/test_image_manager.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/application/CMakeFiles/test_image_manager.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/application/CMakeFiles/test_image_manager.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_image_manager.dir/build.make tests/unit/application/CMakeFiles/test_image_manager.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_image_manager.dir/build.make tests/unit/application/CMakeFiles/test_image_manager.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=29,30 "Built target test_image_manager"
+.PHONY : tests/unit/application/CMakeFiles/test_image_manager.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/application/CMakeFiles/test_image_manager.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 25
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/application/CMakeFiles/test_image_manager.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/application/CMakeFiles/test_image_manager.dir/rule
+
+# Convenience name for target.
+test_image_manager: tests/unit/application/CMakeFiles/test_image_manager.dir/rule
+.PHONY : test_image_manager
+
+# clean rule for target.
+tests/unit/application/CMakeFiles/test_image_manager.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_image_manager.dir/build.make tests/unit/application/CMakeFiles/test_image_manager.dir/clean
+.PHONY : tests/unit/application/CMakeFiles/test_image_manager.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/application/CMakeFiles/test_resource_manager.dir
+
+# All Build rule for target.
+tests/unit/application/CMakeFiles/test_resource_manager.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/application/CMakeFiles/test_resource_manager.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/application/CMakeFiles/test_resource_manager.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/application/CMakeFiles/test_resource_manager.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/application/CMakeFiles/test_resource_manager.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_resource_manager.dir/build.make tests/unit/application/CMakeFiles/test_resource_manager.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_resource_manager.dir/build.make tests/unit/application/CMakeFiles/test_resource_manager.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=35,36 "Built target test_resource_manager"
+.PHONY : tests/unit/application/CMakeFiles/test_resource_manager.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/application/CMakeFiles/test_resource_manager.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 25
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/application/CMakeFiles/test_resource_manager.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/application/CMakeFiles/test_resource_manager.dir/rule
+
+# Convenience name for target.
+test_resource_manager: tests/unit/application/CMakeFiles/test_resource_manager.dir/rule
+.PHONY : test_resource_manager
+
+# clean rule for target.
+tests/unit/application/CMakeFiles/test_resource_manager.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_resource_manager.dir/build.make tests/unit/application/CMakeFiles/test_resource_manager.dir/clean
+.PHONY : tests/unit/application/CMakeFiles/test_resource_manager.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir
+
+# All Build rule for target.
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/build.make tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/build.make tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=33,34 "Built target test_qemu_adapter"
+.PHONY : tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 25
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/rule
+
+# Convenience name for target.
+test_qemu_adapter: tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/rule
+.PHONY : test_qemu_adapter
+
+# clean rule for target.
+tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/build.make tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/clean
+.PHONY : tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/clean
+
+#=============================================================================
+# Target rules for target tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir
+
+# All Build rule for target.
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all: CMakeFiles/scratchpad_static.dir/all
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all: _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/all
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest.dir/all
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all: _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/all
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all: tests/CMakeFiles/test_utils.dir/all
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/build.make tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/depend
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/build.make tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles --progress-num=37,38 "Built target test_ssh_client"
+.PHONY : tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all
+
+# Build rule for subdir invocation for target.
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 25
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/bigattichouse/workspace/scratchpad/cpp/build/CMakeFiles 0
+.PHONY : tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/rule
+
+# Convenience name for target.
+test_ssh_client: tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/rule
+.PHONY : test_ssh_client
+
+# clean rule for target.
+tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/clean:
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/build.make tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/clean
+.PHONY : tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

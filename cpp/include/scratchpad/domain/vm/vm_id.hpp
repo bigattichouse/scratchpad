@@ -94,6 +94,12 @@ public:
     static VMId generate_unique(const std::string& prefix = "");
 
     /**
+     * Generate a unique VM ID (compatibility method)
+     * @return Unique VMId
+     */
+    static VMId generate() { return generate_unique(); }
+
+    /**
      * Check if a string is a valid VM ID format
      * @param id String to check
      * @return true if valid format

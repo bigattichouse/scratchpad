@@ -25,7 +25,11 @@ using PortNumber = uint16_t;
 
 // Resource types
 struct MemoryAmount {
-    uint64_t bytes;
+    uint64_t bytes = 0;
+    
+    // Default constructor
+    MemoryAmount() = default;
+    MemoryAmount(uint64_t b) : bytes(b) {}
     
     static MemoryAmount from_string(const std::string& str);
     static MemoryAmount from_bytes(uint64_t bytes) { return {bytes}; }
@@ -37,7 +41,11 @@ struct MemoryAmount {
 };
 
 struct DiskSize {
-    uint64_t bytes;
+    uint64_t bytes = 0;
+    
+    // Default constructor
+    DiskSize() = default;
+    DiskSize(uint64_t b) : bytes(b) {}
     
     static DiskSize from_string(const std::string& str);
     static DiskSize from_bytes(uint64_t bytes) { return {bytes}; }
@@ -50,8 +58,12 @@ struct DiskSize {
 
 // Port range for resource allocation
 struct PortRange {
-    PortNumber start;
-    PortNumber end;
+    PortNumber start = 0;
+    PortNumber end = 0;
+    
+    // Default constructor
+    PortRange() = default;
+    PortRange(PortNumber s, PortNumber e) : start(s), end(e) {}
     
     bool contains(PortNumber port) const noexcept {
         return port >= start && port <= end;
@@ -115,10 +127,10 @@ struct NetworkConfiguration {
 
 // Resource limits and usage
 struct ResourceLimits {
-    MemoryAmount max_memory;
-    DiskSize max_disk_size;
-    uint32_t max_cpu_cores;
-    PortRange port_range;
+    MemoryAmount max_memory = MemoryAmount::gigabytes(8);
+    DiskSize max_disk_size = DiskSize::gigabytes(100);
+    uint32_t max_cpu_cores = 4;
+    PortRange port_range = {2222, 9999};
 };
 
 struct ResourceUsage {
@@ -167,6 +179,20 @@ struct SSHCredentials {
     std::string public_key_path;
     PortNumber port;
     std::chrono::milliseconds timeout{30000};
+    
+    // Factory methods
+    static SSHCredentials create_with_key_files(
+        const std::string& username,
+        const std::string& private_key_path,
+        const std::string& public_key_path,
+        PortNumber port,
+        std::chrono::milliseconds timeout = std::chrono::milliseconds{30000}
+    );
+    
+    static SSHCredentials create_default(
+        const std::string& username,
+        PortNumber port
+    );
 };
 
 // Image source information
@@ -186,6 +212,18 @@ struct ProvisioningConfig {
     std::string timezone = "UTC";
     bool update_packages = true;
     bool install_essential_tools = true;
+};
+
+// Forward declaration for VMInfo - defined in vm_manager.hpp
+struct VMInfo;
+
+// File copy parameters
+struct CopyParams {
+    std::string source;
+    std::string destination;
+    bool recursive = false;
+    bool preserve_permissions = true;
+    std::chrono::milliseconds timeout{30000};
 };
 
 // Error types and codes

@@ -2,12 +2,27 @@
 
 #include "types.hpp"
 #include "errors.hpp"
+#include "domain/vm/vm_id.hpp"
+#include "domain/vm/vm_configuration.hpp"
 #include <memory>
 #include <vector>
 #include <functional>
 #include <future>
+#include <map>
+#include <optional>
+#include <chrono>
 
 namespace scratchpad {
+
+// VM information structure for API responses
+struct VMInfo {
+    VMId vm_id;
+    VMStatus status;
+    VMConfiguration configuration;
+    ResourceUsage statistics;
+    std::chrono::system_clock::time_point created_at;
+    std::optional<std::chrono::system_clock::time_point> started_at;
+};
 
 // Forward declarations
 class VMLifecycleService;
@@ -28,11 +43,14 @@ public:
      * Configuration options for VMManager
      */
     struct Options {
-        std::string vm_directory;
-        std::string ssh_keys_directory;
-        ResourceLimits default_limits;
+        std::string vm_directory = "";
+        std::string ssh_keys_directory = "";
+        ResourceLimits default_limits{};
         bool enable_health_monitoring = true;
         std::chrono::milliseconds health_check_interval{30000};
+        
+        // Default constructor
+        Options() = default;
     };
 
     /**
@@ -41,8 +59,10 @@ public:
     struct CreateParams {
         VMId vm_id;
         ImageType base_image;
+        std::string image_name; // For compatibility with implementation
         MemoryAmount memory = MemoryAmount::megabytes(512);
         DiskSize disk_size = DiskSize::gigabytes(10);
+        uint32_t cpu_cores = 1; // For compatibility with implementation
         DiskMode disk_mode = DiskMode::Ephemeral;
         std::optional<std::string> work_directory;
         NetworkConfiguration network_config{};
@@ -65,14 +85,19 @@ public:
 
 public:
     /**
+     * Construct VMManager with default options
+     */
+    VMManager();
+    
+    /**
      * Construct VMManager with specified options
      */
-    explicit VMManager(const Options& options = {});
+    explicit VMManager(const Options& options);
     
     /**
      * Destructor - ensures clean shutdown of all VMs
      */
-    ~VMManager();
+    virtual ~VMManager();
 
     // Non-copyable, movable
     VMManager(const VMManager&) = delete;
@@ -88,14 +113,14 @@ public:
      * @return VM identifier
      * @throws VMError if creation fails
      */
-    VMId create_vm(const CreateParams& params);
+    virtual VMId create_vm(const CreateParams& params);
 
     /**
      * Start an existing virtual machine
      * @param vm_id VM identifier
      * @throws VMError if VM doesn't exist or start fails
      */
-    void start_vm(const VMId& vm_id);
+    virtual void start_vm(const VMId& vm_id);
 
     /**
      * Start VM asynchronously
@@ -111,7 +136,14 @@ public:
      * @param force Force shutdown without graceful stop
      * @throws VMError if VM doesn't exist or stop fails
      */
-    void stop_vm(const VMId& vm_id, bool force = false);
+    virtual void stop_vm(const VMId& vm_id, bool force = false);
+    
+    /**
+     * Stop a running virtual machine (implementation compatibility)
+     * @param vm_id VM identifier
+     * @throws VMError if VM doesn't exist or stop fails
+     */
+    virtual void stop_vm(const VMId& vm_id);
 
     /**
      * Stop VM asynchronously
@@ -127,7 +159,7 @@ public:
      * @param vm_id VM identifier
      * @throws VMError if VM doesn't exist or is still running
      */
-    void destroy_vm(const VMId& vm_id);
+    virtual void destroy_vm(const VMId& vm_id);
 
     // ========== VM Communication ==========
 
@@ -139,7 +171,7 @@ public:
      * @throws VMError if VM is not running
      * @throws SSHError if communication fails
      */
-    CommandResult execute_command(const VMId& vm_id, const ExecuteParams& params);
+    virtual CommandResult execute_command(const VMId& vm_id, const ExecuteParams& params);
 
     /**
      * Execute command asynchronously
@@ -147,7 +179,7 @@ public:
      * @param params Execution parameters
      * @return Future containing command result
      */
-    std::future<CommandResult> execute_command_async(const VMId& vm_id, const ExecuteParams& params);
+    virtual std::future<CommandResult> execute_command_async(const VMId& vm_id, const ExecuteParams& params);
 
     /**
      * Get SSH connection for interactive use
@@ -158,6 +190,26 @@ public:
      */
     std::unique_ptr<SSHConnection> connect_ssh(const VMId& vm_id);
 
+    // ========== File Operations ==========
+
+    /**
+     * Copy file from host to VM
+     * @param vm_id VM identifier
+     * @param params Copy parameters (source, destination, options)
+     * @throws VMError if VM is not running
+     * @throws SSHError if copy fails
+     */
+    virtual void copy_file_to_vm(const VMId& vm_id, const CopyParams& params);
+
+    /**
+     * Copy file from VM to host
+     * @param vm_id VM identifier
+     * @param params Copy parameters (source, destination, options)
+     * @throws VMError if VM is not running
+     * @throws SSHError if copy fails
+     */
+    virtual void copy_file_from_vm(const VMId& vm_id, const CopyParams& params);
+
     // ========== VM Information and Management ==========
 
     /**
@@ -165,7 +217,13 @@ public:
      * @param status_filter Optional status filter
      * @return Vector of VM information
      */
-    std::vector<VirtualMachine> list_vms(std::optional<VMStatus> status_filter = {}) const;
+    virtual std::vector<VirtualMachine> list_vms(std::optional<VMStatus> status_filter = {}) const;
+
+    /**
+     * List all VM IDs (implementation compatibility)
+     * @return Vector of VM identifiers
+     */
+    virtual std::vector<VMId> list_vms() const;
 
     /**
      * Get detailed information about a specific VM
@@ -173,7 +231,21 @@ public:
      * @return VM information
      * @throws VMError if VM doesn't exist
      */
-    VirtualMachine get_vm(const VMId& vm_id) const;
+    virtual VirtualMachine get_vm(const VMId& vm_id) const;
+
+    /**
+     * Get VM information structure (implementation compatibility)
+     * @param vm_id VM identifier
+     * @return VM information structure
+     * @throws VMError if VM doesn't exist
+     */
+    virtual VMInfo get_vm_info(const VMId& vm_id) const;
+
+    /**
+     * List all VM information structures (implementation compatibility)
+     * @return Vector of VM information structures
+     */
+    virtual std::vector<VMInfo> list_vm_info() const;
 
     /**
      * Check if VM exists
@@ -246,13 +318,19 @@ public:
      * Get system resource usage
      * @return Current resource usage
      */
-    ResourceUsage get_resource_usage() const;
+    virtual ResourceUsage get_resource_usage() const;
 
     /**
      * Get system limits and capabilities
      * @return System limits
      */
     SystemLimits get_system_limits() const;
+
+    /**
+     * Get allocated ports (implementation compatibility)
+     * @return Vector of allocated port numbers
+     */
+    virtual std::vector<PortNumber> get_allocated_ports() const;
 
     // ========== Event Handling ==========
 
@@ -268,6 +346,17 @@ public:
      * @param callback_id ID returned by register_status_callback
      */
     void unregister_status_callback(size_t callback_id);
+
+    /**
+     * Set status callback (implementation compatibility)
+     * @param callback Status update callback
+     */
+    virtual void set_status_callback(StatusCallback callback);
+
+    /**
+     * Remove status callback (implementation compatibility)
+     */
+    virtual void remove_status_callback();
 
 private:
     class Impl;

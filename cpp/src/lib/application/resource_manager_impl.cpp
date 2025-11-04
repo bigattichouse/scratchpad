@@ -1,4 +1,4 @@
-#include "application/resource_manager_impl.hpp"
+#include "resource_manager_impl.hpp"
 #include "scratchpad/errors.hpp"
 
 #include <algorithm>

@@ -62,6 +62,7 @@ public:
     virtual AccelerationType detect_available_acceleration() const;
     virtual bool supports_nested_virtualization() const;
     virtual size_t get_max_supported_memory() const;
+    virtual bool is_qemu_available() const;
 
     // Configuration
     virtual const Options& get_options() const;

@@ -1,4 +1,4 @@
-#include "application/vm_manager_impl.hpp"
+#include "vm_manager_impl.hpp"
 #include "scratchpad/domain/vm/vm_id.hpp"
 #include "scratchpad/domain/vm/vm_configuration.hpp"
 #include "scratchpad/errors.hpp"
@@ -19,7 +19,7 @@ VMManagerImpl::VMManagerImpl()
     // Validate QEMU availability
     if (!qemu_adapter_->is_qemu_available()) {
         THROW_SYSTEM_ERROR(ErrorCode::QemuNotFound, 
-                          "QEMU not found on system. Please install QEMU.");
+                          "QEMU not found on system. Please install QEMU.", 0);
     }
     
     start_monitoring_thread();
@@ -66,13 +66,15 @@ VMId VMManagerImpl::create_vm(const CreateParams& params) {
     // Build VM configuration
     VMConfiguration config = build_vm_configuration(params);
     
-    // Create VM entity
-    auto vm = std::make_unique<VirtualMachine>(vm_id, config);
-    auto vm_state = std::make_unique<VMState>(std::move(vm));
-    
-    // Allocate SSH port
+    // Allocate SSH port and configure it
     PortNumber ssh_port = allocate_ssh_port();
-    vm_state->vm->configuration().ssh_port = ssh_port;
+    NetworkConfiguration net_config = config.network_config();
+    net_config.ssh_port = ssh_port;
+    config.set_network_configuration(net_config);
+    
+    // Create VM entity (VMConfiguration already contains VMId)
+    auto vm = std::make_unique<VirtualMachine>(config);
+    auto vm_state = std::make_unique<VMState>(std::move(vm));
     
     {
         std::unique_lock lock(vms_mutex_);
@@ -80,7 +82,7 @@ VMId VMManagerImpl::create_vm(const CreateParams& params) {
     }
     
     logger_.info("VM created successfully: {}", vm_id.value());
-    notify_status_change(vm_id, VMStatus::Unknown, VMStatus::Stopped);
+    notify_status_change(vm_id, VMStatus::Stopped, VMStatus::Stopped);
     
     return vm_id;
 }
@@ -269,7 +271,7 @@ CommandResult VMManagerImpl::execute_command(const VMId& vm_id, const ExecutePar
     
     if (!state->ssh_connection || !state->ssh_connection->is_connected()) {
         THROW_SSH_ERROR(ErrorCode::SSHConnectionFailed, 
-                       "SSH connection not available for VM", vm_id);
+                       "SSH connection not available for VM", "localhost", 0);
     }
     
     return ssh_client_->execute_command(*state->ssh_connection, params);
@@ -293,7 +295,7 @@ void VMManagerImpl::copy_file_to_vm(const VMId& vm_id, const CopyParams& params)
     
     if (!state->ssh_connection || !state->ssh_connection->is_connected()) {
         THROW_SSH_ERROR(ErrorCode::SSHConnectionFailed, 
-                       "SSH connection not available for VM", vm_id);
+                       "SSH connection not available for VM", "localhost", 0);
     }
     
     ssh_client_->copy_file_to_remote(*state->ssh_connection, params.source, params.destination);
@@ -311,7 +313,7 @@ void VMManagerImpl::copy_file_from_vm(const VMId& vm_id, const CopyParams& param
     
     if (!state->ssh_connection || !state->ssh_connection->is_connected()) {
         THROW_SSH_ERROR(ErrorCode::SSHConnectionFailed, 
-                       "SSH connection not available for VM", vm_id);
+                       "SSH connection not available for VM", "localhost", 0);
     }
     
     ssh_client_->copy_file_from_remote(*state->ssh_connection, params.source, params.destination);
@@ -380,7 +382,7 @@ void VMManagerImpl::cleanup_vm_resources(const VMId& vm_id) {
     if (!state) return;
     
     // Deallocate SSH port
-    PortNumber ssh_port = state->vm->configuration().ssh_port;
+    PortNumber ssh_port = state->vm->configuration().network_config().ssh_port;
     if (ssh_port > 0) {
         deallocate_ssh_port(ssh_port);
     }
@@ -415,14 +417,10 @@ void VMManagerImpl::establish_ssh_connection(VMState& state) {
     
     SSHCredentials credentials = SSHCredentials::create_default(
         "scratchpad", 
-        state.vm->configuration().ssh_port
+        state.vm->configuration().network_config().ssh_port
     );
     
-    state.ssh_connection = std::make_unique<SSHConnection>(
-        state.vm->id(),
-        "127.0.0.1",
-        credentials
-    );
+    state.ssh_connection = ssh_client_->create_connection(credentials);
     
     // Try to connect with retries
     int max_retries = 30;
@@ -437,7 +435,7 @@ void VMManagerImpl::establish_ssh_connection(VMState& state) {
             if (i == max_retries - 1) {
                 THROW_SSH_ERROR(ErrorCode::SSHConnectionFailed, 
                                "Failed to establish SSH connection after retries: " + std::string(e.what()),
-                               state.vm->id());
+                               "localhost", state.vm->configuration().network_config().ssh_port);
             }
         }
         
@@ -448,7 +446,7 @@ void VMManagerImpl::establish_ssh_connection(VMState& state) {
 void VMManagerImpl::close_ssh_connection(VMState& state) {
     if (state.ssh_connection) {
         logger_.debug("Closing SSH connection for VM: {}", state.vm->id().value());
-        ssh_client_->disconnect(*state.ssh_connection);
+        state.ssh_connection->disconnect();
         state.ssh_connection.reset();
     }
 }
@@ -540,7 +538,9 @@ void VMManagerImpl::notify_status_change(const VMId& vm_id, VMStatus old_status,
     std::lock_guard lock(callback_mutex_);
     if (status_callback_) {
         try {
-            status_callback_(vm_id, old_status, new_status);
+            std::string status_message = "Status changed from " + std::to_string(static_cast<int>(old_status)) + 
+                                        " to " + std::to_string(static_cast<int>(new_status));
+            status_callback_(vm_id, new_status, status_message);
         } catch (const std::exception& e) {
             logger_.error("Error in status callback: {}", e.what());
         }
@@ -558,33 +558,33 @@ VMConfiguration VMManagerImpl::build_vm_configuration(const CreateParams& params
 
 void VMManagerImpl::validate_create_params(const CreateParams& params) {
     if (params.image_name.empty()) {
-        THROW_VM_ERROR(ErrorCode::InvalidArgument, "Image name cannot be empty");
+        THROW_VM_ERROR(ErrorCode::InvalidArgument, "Image name cannot be empty", "");
     }
     
     if (params.cpu_cores == 0) {
-        THROW_VM_ERROR(ErrorCode::InvalidArgument, "CPU cores must be greater than 0");
+        THROW_VM_ERROR(ErrorCode::InvalidArgument, "CPU cores must be greater than 0", "");
     }
     
     if (params.cpu_cores > std::thread::hardware_concurrency()) {
         THROW_VM_ERROR(ErrorCode::InvalidArgument, 
                       "CPU cores cannot exceed system limit: " + 
-                      std::to_string(std::thread::hardware_concurrency()));
+                      std::to_string(std::thread::hardware_concurrency()), "");
     }
 }
 
 void VMManagerImpl::validate_execute_params(const ExecuteParams& params) {
     if (params.command.empty()) {
-        THROW_SSH_ERROR(ErrorCode::InvalidArgument, "Command cannot be empty");
+        THROW_SSH_ERROR(ErrorCode::InvalidArgument, "Command cannot be empty", "localhost", 0);
     }
 }
 
 void VMManagerImpl::validate_copy_params(const CopyParams& params) {
     if (params.source.empty()) {
-        THROW_SSH_ERROR(ErrorCode::InvalidArgument, "Source path cannot be empty");
+        THROW_SSH_ERROR(ErrorCode::InvalidArgument, "Source path cannot be empty", "localhost", 0);
     }
     
     if (params.destination.empty()) {
-        THROW_SSH_ERROR(ErrorCode::InvalidArgument, "Destination path cannot be empty");
+        THROW_SSH_ERROR(ErrorCode::InvalidArgument, "Destination path cannot be empty", "localhost", 0);
     }
 }
 

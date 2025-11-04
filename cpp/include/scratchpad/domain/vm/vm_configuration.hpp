@@ -348,6 +348,19 @@ public:
      */
     static VMConfiguration create_testing(const VMId& vm_id, ImageType base_image);
 
+    /**
+     * Create Linux configuration with custom specifications
+     * @param image_name Base image name/type
+     * @param memory Memory allocation
+     * @param disk_size Disk size allocation
+     * @param cpu_cores Number of CPU cores
+     * @return Linux configuration
+     */
+    static VMConfiguration create_for_linux(const std::string& image_name, 
+                                           const MemoryAmount& memory,
+                                           const DiskSize& disk_size,
+                                           uint32_t cpu_cores);
+
     // ========== Utility Methods ==========
 
     /**

@@ -17,14 +17,34 @@
 //Builds the googlemock subproject
 BUILD_GMOCK:BOOL=ON
 
+//Value Computed by CMake
+CLI11_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/cli11-build
+
+//Value Computed by CMake
+CLI11_IS_TOP_LEVEL:STATIC=OFF
+
+//Generate a precompiled static library instead of a header-only
+CLI11_PRECOMPILED:BOOL=OFF
+
+//Download the sanitizers CMake config
+CLI11_SANITIZERS:BOOL=OFF
+
+//Generate a single header file
+CLI11_SINGLE_FILE:BOOL=OFF
+
+//Value Computed by CMake
+CLI11_SOURCE_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/cli11-src
+
+//Turn all warnings into errors (for CI)
+CLI11_WARNINGS_AS_ERRORS:BOOL=OFF
+
 //Path to a program.
 CMAKE_ADDR2LINE:FILEPATH=/usr/bin/addr2line
 
 //Path to a program.
 CMAKE_AR:FILEPATH=/usr/bin/ar
 
-//Choose the type of build, options are: None Debug Release RelWithDebInfo
-// MinSizeRel ...
+//Build type
 CMAKE_BUILD_TYPE:STRING=Debug
 
 //Enable/Disable color output during build.
@@ -292,14 +312,100 @@ FETCHCONTENT_FULLY_DISCONNECTED:BOOL=OFF
 FETCHCONTENT_QUIET:BOOL=ON
 
 //When not empty, overrides where to find pre-populated content
+// for CLI11
+FETCHCONTENT_SOURCE_DIR_CLI11:PATH=
+
+//When not empty, overrides where to find pre-populated content
+// for fmt
+FETCHCONTENT_SOURCE_DIR_FMT:PATH=
+
+//When not empty, overrides where to find pre-populated content
 // for googletest
 FETCHCONTENT_SOURCE_DIR_GOOGLETEST:PATH=
+
+//When not empty, overrides where to find pre-populated content
+// for nlohmann_json
+FETCHCONTENT_SOURCE_DIR_NLOHMANN_JSON:PATH=
+
+//When not empty, overrides where to find pre-populated content
+// for spdlog
+FETCHCONTENT_SOURCE_DIR_SPDLOG:PATH=
 
 //Enables UPDATE_DISCONNECTED behavior for all content population
 FETCHCONTENT_UPDATES_DISCONNECTED:BOOL=OFF
 
+//Enables UPDATE_DISCONNECTED behavior just for population of CLI11
+FETCHCONTENT_UPDATES_DISCONNECTED_CLI11:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of fmt
+FETCHCONTENT_UPDATES_DISCONNECTED_FMT:BOOL=OFF
+
 //Enables UPDATE_DISCONNECTED behavior just for population of googletest
 FETCHCONTENT_UPDATES_DISCONNECTED_GOOGLETEST:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of nlohmann_json
+FETCHCONTENT_UPDATES_DISCONNECTED_NLOHMANN_JSON:BOOL=OFF
+
+//Enables UPDATE_DISCONNECTED behavior just for population of spdlog
+FETCHCONTENT_UPDATES_DISCONNECTED_SPDLOG:BOOL=OFF
+
+//Value Computed by CMake
+FMT_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/fmt-build
+
+//Installation directory for cmake files, a relative path that
+// will be joined with /usr/local or an absolute path.
+FMT_CMAKE_DIR:STRING=lib/cmake/fmt
+
+//Generate the cuda-test target.
+FMT_CUDA_TEST:BOOL=OFF
+
+//Debug library postfix.
+FMT_DEBUG_POSTFIX:STRING=d
+
+//Generate the doc target.
+FMT_DOC:BOOL=OFF
+
+//Generate the fuzz target.
+FMT_FUZZ:BOOL=OFF
+
+//Installation directory for include files, a relative path that
+// will be joined with /usr/local or an absolute path.
+FMT_INC_DIR:STRING=include
+
+//Generate the install target.
+FMT_INSTALL:BOOL=ON
+
+//Value Computed by CMake
+FMT_IS_TOP_LEVEL:STATIC=OFF
+
+//Installation directory for libraries, a relative path that will
+// be joined to /usr/local or an absolute path.
+FMT_LIB_DIR:STRING=lib
+
+//Build a module instead of a traditional library.
+FMT_MODULE:BOOL=OFF
+
+//Include core requiring OS (Windows/Posix) 
+FMT_OS:BOOL=ON
+
+//Enable extra warnings and expensive tests.
+FMT_PEDANTIC:BOOL=OFF
+
+//Installation directory for pkgconfig (.pc) files, a relative
+// path that will be joined with /usr/local or an absolute path.
+FMT_PKGCONFIG_DIR:STRING=lib/pkgconfig
+
+//Value Computed by CMake
+FMT_SOURCE_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/fmt-src
+
+//Expose headers with marking them as system.
+FMT_SYSTEM_HEADERS:BOOL=OFF
+
+//Generate the test target.
+FMT_TEST:BOOL=OFF
+
+//Halt the compilation with an error on compiler warnings.
+FMT_WERROR:BOOL=OFF
 
 //Git command line client
 GIT_EXECUTABLE:FILEPATH=/usr/bin/git
@@ -311,6 +417,124 @@ GTEST_HAS_ABSL:BOOL=OFF
 //Enable installation of googletest. (Projects embedding googletest
 // may want to turn this OFF.)
 INSTALL_GTEST:BOOL=ON
+
+//Build the unit tests when BUILD_TESTING is enabled.
+JSON_BuildTests:BOOL=OFF
+
+//Enable CI build targets.
+JSON_CI:BOOL=OFF
+
+//Use extended diagnostic messages.
+JSON_Diagnostics:BOOL=OFF
+
+//Disable default integer enum serialization.
+JSON_DisableEnumSerialization:BOOL=OFF
+
+//Place use-defined string literals in the global namespace.
+JSON_GlobalUDLs:BOOL=ON
+
+//Enable implicit conversions.
+JSON_ImplicitConversions:BOOL=ON
+
+//Install CMake targets during install step.
+JSON_Install:BOOL=OFF
+
+//Enable legacy discarded value comparison.
+JSON_LegacyDiscardedValueComparison:BOOL=OFF
+
+//Use non-amalgamated version of the library.
+JSON_MultipleHeaders:BOOL=ON
+
+//Include as system headers (skip for clang-tidy).
+JSON_SystemInclude:BOOL=OFF
+
+//Arguments to supply to pkg-config
+PKG_CONFIG_ARGN:STRING=
+
+//pkg-config executable
+PKG_CONFIG_EXECUTABLE:FILEPATH=/usr/bin/pkg-config
+
+//Build all artifacts
+SPDLOG_BUILD_ALL:BOOL=OFF
+
+//Build benchmarks (Requires https://github.com/google/benchmark.git
+// to be installed)
+SPDLOG_BUILD_BENCH:BOOL=OFF
+
+//Build example
+SPDLOG_BUILD_EXAMPLE:BOOL=OFF
+
+//Build header only example
+SPDLOG_BUILD_EXAMPLE_HO:BOOL=OFF
+
+//Build position independent code (-fPIC)
+SPDLOG_BUILD_PIC:BOOL=OFF
+
+//Build shared library
+SPDLOG_BUILD_SHARED:BOOL=OFF
+
+//Build tests
+SPDLOG_BUILD_TESTS:BOOL=OFF
+
+//Build tests using the header only version
+SPDLOG_BUILD_TESTS_HO:BOOL=OFF
+
+//Enable compiler warnings
+SPDLOG_BUILD_WARNINGS:BOOL=OFF
+
+//Use CLOCK_REALTIME_COARSE instead of the regular clock,
+SPDLOG_CLOCK_COARSE:BOOL=OFF
+
+//Disable default logger creation
+SPDLOG_DISABLE_DEFAULT_LOGGER:BOOL=OFF
+
+//Build static or shared library using precompiled header to speed
+// up compilation time
+SPDLOG_ENABLE_PCH:BOOL=OFF
+
+//Use external fmt library instead of bundled
+SPDLOG_FMT_EXTERNAL:BOOL=OFF
+
+//Use external fmt header-only library instead of bundled
+SPDLOG_FMT_EXTERNAL_HO:BOOL=OFF
+
+//Generate the install target
+SPDLOG_INSTALL:BOOL=OFF
+
+//prevent spdlog from using of std::atomic log levels (use only
+// if your code never modifies log levels concurrently
+SPDLOG_NO_ATOMIC_LEVELS:BOOL=OFF
+
+//Compile with -fno-exceptions. Call abort() on any spdlog exceptions
+SPDLOG_NO_EXCEPTIONS:BOOL=OFF
+
+//prevent spdlog from querying the thread id on each log call if
+// thread id is not needed
+SPDLOG_NO_THREAD_ID:BOOL=OFF
+
+//prevent spdlog from using thread local storage
+SPDLOG_NO_TLS:BOOL=OFF
+
+//Prevent from child processes to inherit log file descriptors
+SPDLOG_PREVENT_CHILD_FD:BOOL=OFF
+
+//Enable address sanitizer in tests
+SPDLOG_SANITIZE_ADDRESS:BOOL=OFF
+
+//Include as system headers (skip for clang-tidy).
+SPDLOG_SYSTEM_INCLUDES:BOOL=OFF
+
+//run clang-tidy
+SPDLOG_TIDY:BOOL=OFF
+
+//Use std::format instead of fmt library.
+SPDLOG_USE_STD_FORMAT:BOOL=OFF
+
+//non supported option
+SPDLOG_WCHAR_FILENAMES:BOOL=OFF
+
+//non supported option
+SPDLOG_WCHAR_SUPPORT:BOOL=OFF
 
 //Value Computed by CMake
 gmock_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/googletest-build/googlemock
@@ -359,6 +583,24 @@ gtest_force_shared_crt:BOOL=OFF
 gtest_hide_internal_symbols:BOOL=OFF
 
 //Value Computed by CMake
+nlohmann_json_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/nlohmann_json-build
+
+//Value Computed by CMake
+nlohmann_json_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+nlohmann_json_SOURCE_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/nlohmann_json-src
+
+//Value Computed by CMake
+scratchpad_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build
+
+//Value Computed by CMake
+scratchpad_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+scratchpad_SOURCE_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp
+
+//Value Computed by CMake
 scratchpad_tests_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build
 
 //Value Computed by CMake
@@ -366,6 +608,15 @@ scratchpad_tests_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 scratchpad_tests_SOURCE_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp
+
+//Value Computed by CMake
+spdlog_BINARY_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/spdlog-build
+
+//Value Computed by CMake
+spdlog_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+spdlog_SOURCE_DIR:STATIC=/home/bigattichouse/workspace/scratchpad/cpp/build/_deps/spdlog-src
 
 
 ########################
@@ -506,7 +757,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=4
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=9
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP
@@ -551,12 +802,44 @@ CMAKE_TAPI-ADVANCED:INTERNAL=1
 CMAKE_UNAME:INTERNAL=/usr/bin/uname
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding PkgConfig
+FIND_PACKAGE_MESSAGE_DETAILS_PkgConfig:INTERNAL=[/usr/bin/pkg-config][v1.8.1()]
 //Details about finding Python3
 FIND_PACKAGE_MESSAGE_DETAILS_Python3:INTERNAL=[/usr/bin/python3][cfound components: Interpreter ][v3.12.3()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
 //ADVANCED property for variable: GIT_EXECUTABLE
 GIT_EXECUTABLE-ADVANCED:INTERNAL=1
+LIBSSH_CFLAGS:INTERNAL=
+LIBSSH_CFLAGS_I:INTERNAL=
+LIBSSH_CFLAGS_OTHER:INTERNAL=
+LIBSSH_FOUND:INTERNAL=
+LIBSSH_INCLUDEDIR:INTERNAL=
+LIBSSH_LIBDIR:INTERNAL=
+LIBSSH_LIBS:INTERNAL=
+LIBSSH_LIBS_L:INTERNAL=
+LIBSSH_LIBS_OTHER:INTERNAL=
+LIBSSH_LIBS_PATHS:INTERNAL=
+LIBSSH_MODULE_NAME:INTERNAL=
+LIBSSH_PREFIX:INTERNAL=
+LIBSSH_STATIC_CFLAGS:INTERNAL=
+LIBSSH_STATIC_CFLAGS_I:INTERNAL=
+LIBSSH_STATIC_CFLAGS_OTHER:INTERNAL=
+LIBSSH_STATIC_LIBDIR:INTERNAL=
+LIBSSH_STATIC_LIBS:INTERNAL=
+LIBSSH_STATIC_LIBS_L:INTERNAL=
+LIBSSH_STATIC_LIBS_OTHER:INTERNAL=
+LIBSSH_STATIC_LIBS_PATHS:INTERNAL=
+LIBSSH_VERSION:INTERNAL=
+LIBSSH_libssh_INCLUDEDIR:INTERNAL=
+LIBSSH_libssh_LIBDIR:INTERNAL=
+LIBSSH_libssh_PREFIX:INTERNAL=
+LIBSSH_libssh_VERSION:INTERNAL=
+NLOHMANN_JSON_CONFIG_INSTALL_DIR:INTERNAL=share/cmake/nlohmann_json
+//ADVANCED property for variable: PKG_CONFIG_ARGN
+PKG_CONFIG_ARGN-ADVANCED:INTERNAL=1
+//ADVANCED property for variable: PKG_CONFIG_EXECUTABLE
+PKG_CONFIG_EXECUTABLE-ADVANCED:INTERNAL=1
 //linker supports push/pop state
 _CMAKE_LINKER_PUSHPOP_STATE_SUPPORTED:INTERNAL=TRUE
 //CMAKE_INSTALL_PREFIX during last run

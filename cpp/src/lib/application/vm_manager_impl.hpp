@@ -1,18 +1,20 @@
 #pragma once
 
 #include "scratchpad/vm_manager.hpp"
-#include "domain/vm/virtual_machine.hpp"
-#include "domain/process/qemu_process.hpp"
-#include "domain/communication/ssh_connection.hpp"
-#include "infrastructure/qemu/qemu_adapter.hpp"
-#include "infrastructure/ssh/ssh_client.hpp"
-#include "logging/logger.hpp"
+#include "scratchpad/domain/vm/virtual_machine.hpp"
+#include "scratchpad/domain/process/qemu_process.hpp"
+#include "scratchpad/domain/communication/ssh_connection.hpp"
+#include "scratchpad/infrastructure/qemu/qemu_adapter.hpp"
+#include "scratchpad/infrastructure/ssh/ssh_client.hpp"
+#include "../logging/logger.hpp"
 
 #include <memory>
 #include <unordered_map>
 #include <mutex>
 #include <future>
 #include <thread>
+#include <shared_mutex>
+#include <set>
 
 namespace scratchpad {
 
@@ -26,10 +28,10 @@ public:
     void destroy_vm(const VMId& vm_id) override;
     void start_vm(const VMId& vm_id) override;
     void stop_vm(const VMId& vm_id) override;
-    void restart_vm(const VMId& vm_id) override;
+    void restart_vm(const VMId& vm_id);
 
     // VM Status and Information
-    VMStatus get_vm_status(const VMId& vm_id) const override;
+    VMStatus get_vm_status(const VMId& vm_id) const;
     VMInfo get_vm_info(const VMId& vm_id) const override;
     std::vector<VMId> list_vms() const override;
     std::vector<VMInfo> list_vm_info() const override;
@@ -55,7 +57,7 @@ private:
         std::unique_ptr<VirtualMachine> vm;
         std::unique_ptr<QemuProcess> process;
         std::unique_ptr<SSHConnection> ssh_connection;
-        std::mutex state_mutex;
+        std::shared_mutex state_mutex;
         
         VMState(std::unique_ptr<VirtualMachine> vm_ptr)
             : vm(std::move(vm_ptr)) {}

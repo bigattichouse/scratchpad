@@ -172,6 +172,19 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named scratchpad_static
+
+# Build rule for target.
+scratchpad_static: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 scratchpad_static
+.PHONY : scratchpad_static
+
+# fast build rule for target.
+scratchpad_static/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/build
+.PHONY : scratchpad_static/fast
+
+#=============================================================================
 # Target rules for targets named simple_test
 
 # Build rule for target.
@@ -236,6 +249,352 @@ gtest_main/fast:
 	$(MAKE) $(MAKESILENT) -f _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build.make _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/build
 .PHONY : gtest_main/fast
 
+#=============================================================================
+# Target rules for targets named test_utils
+
+# Build rule for target.
+test_utils: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_utils
+.PHONY : test_utils
+
+# fast build rule for target.
+test_utils/fast:
+	$(MAKE) $(MAKESILENT) -f tests/CMakeFiles/test_utils.dir/build.make tests/CMakeFiles/test_utils.dir/build
+.PHONY : test_utils/fast
+
+#=============================================================================
+# Target rules for targets named test_vm_domain
+
+# Build rule for target.
+test_vm_domain: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_vm_domain
+.PHONY : test_vm_domain
+
+# fast build rule for target.
+test_vm_domain/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_vm_domain.dir/build.make tests/unit/domain/CMakeFiles/test_vm_domain.dir/build
+.PHONY : test_vm_domain/fast
+
+#=============================================================================
+# Target rules for targets named test_process_domain
+
+# Build rule for target.
+test_process_domain: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_process_domain
+.PHONY : test_process_domain
+
+# fast build rule for target.
+test_process_domain/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_process_domain.dir/build.make tests/unit/domain/CMakeFiles/test_process_domain.dir/build
+.PHONY : test_process_domain/fast
+
+#=============================================================================
+# Target rules for targets named test_communication_domain
+
+# Build rule for target.
+test_communication_domain: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_communication_domain
+.PHONY : test_communication_domain
+
+# fast build rule for target.
+test_communication_domain/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_communication_domain.dir/build.make tests/unit/domain/CMakeFiles/test_communication_domain.dir/build
+.PHONY : test_communication_domain/fast
+
+#=============================================================================
+# Target rules for targets named test_config_and_errors
+
+# Build rule for target.
+test_config_and_errors: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_config_and_errors
+.PHONY : test_config_and_errors
+
+# fast build rule for target.
+test_config_and_errors/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/domain/CMakeFiles/test_config_and_errors.dir/build.make tests/unit/domain/CMakeFiles/test_config_and_errors.dir/build
+.PHONY : test_config_and_errors/fast
+
+#=============================================================================
+# Target rules for targets named test_vm_manager
+
+# Build rule for target.
+test_vm_manager: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_vm_manager
+.PHONY : test_vm_manager
+
+# fast build rule for target.
+test_vm_manager/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_vm_manager.dir/build.make tests/unit/application/CMakeFiles/test_vm_manager.dir/build
+.PHONY : test_vm_manager/fast
+
+#=============================================================================
+# Target rules for targets named test_image_manager
+
+# Build rule for target.
+test_image_manager: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_image_manager
+.PHONY : test_image_manager
+
+# fast build rule for target.
+test_image_manager/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_image_manager.dir/build.make tests/unit/application/CMakeFiles/test_image_manager.dir/build
+.PHONY : test_image_manager/fast
+
+#=============================================================================
+# Target rules for targets named test_resource_manager
+
+# Build rule for target.
+test_resource_manager: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_resource_manager
+.PHONY : test_resource_manager
+
+# fast build rule for target.
+test_resource_manager/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/application/CMakeFiles/test_resource_manager.dir/build.make tests/unit/application/CMakeFiles/test_resource_manager.dir/build
+.PHONY : test_resource_manager/fast
+
+#=============================================================================
+# Target rules for targets named test_qemu_adapter
+
+# Build rule for target.
+test_qemu_adapter: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_qemu_adapter
+.PHONY : test_qemu_adapter
+
+# fast build rule for target.
+test_qemu_adapter/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/build.make tests/unit/infrastructure/CMakeFiles/test_qemu_adapter.dir/build
+.PHONY : test_qemu_adapter/fast
+
+#=============================================================================
+# Target rules for targets named test_ssh_client
+
+# Build rule for target.
+test_ssh_client: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test_ssh_client
+.PHONY : test_ssh_client
+
+# fast build rule for target.
+test_ssh_client/fast:
+	$(MAKE) $(MAKESILENT) -f tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/build.make tests/unit/infrastructure/CMakeFiles/test_ssh_client.dir/build
+.PHONY : test_ssh_client/fast
+
+src/lib/application/image_manager_impl.o: src/lib/application/image_manager_impl.cpp.o
+.PHONY : src/lib/application/image_manager_impl.o
+
+# target to build an object file
+src/lib/application/image_manager_impl.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/image_manager_impl.cpp.o
+.PHONY : src/lib/application/image_manager_impl.cpp.o
+
+src/lib/application/image_manager_impl.i: src/lib/application/image_manager_impl.cpp.i
+.PHONY : src/lib/application/image_manager_impl.i
+
+# target to preprocess a source file
+src/lib/application/image_manager_impl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/image_manager_impl.cpp.i
+.PHONY : src/lib/application/image_manager_impl.cpp.i
+
+src/lib/application/image_manager_impl.s: src/lib/application/image_manager_impl.cpp.s
+.PHONY : src/lib/application/image_manager_impl.s
+
+# target to generate assembly for a file
+src/lib/application/image_manager_impl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/image_manager_impl.cpp.s
+.PHONY : src/lib/application/image_manager_impl.cpp.s
+
+src/lib/application/resource_manager_impl.o: src/lib/application/resource_manager_impl.cpp.o
+.PHONY : src/lib/application/resource_manager_impl.o
+
+# target to build an object file
+src/lib/application/resource_manager_impl.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/resource_manager_impl.cpp.o
+.PHONY : src/lib/application/resource_manager_impl.cpp.o
+
+src/lib/application/resource_manager_impl.i: src/lib/application/resource_manager_impl.cpp.i
+.PHONY : src/lib/application/resource_manager_impl.i
+
+# target to preprocess a source file
+src/lib/application/resource_manager_impl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/resource_manager_impl.cpp.i
+.PHONY : src/lib/application/resource_manager_impl.cpp.i
+
+src/lib/application/resource_manager_impl.s: src/lib/application/resource_manager_impl.cpp.s
+.PHONY : src/lib/application/resource_manager_impl.s
+
+# target to generate assembly for a file
+src/lib/application/resource_manager_impl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/resource_manager_impl.cpp.s
+.PHONY : src/lib/application/resource_manager_impl.cpp.s
+
+src/lib/application/vm_manager_impl.o: src/lib/application/vm_manager_impl.cpp.o
+.PHONY : src/lib/application/vm_manager_impl.o
+
+# target to build an object file
+src/lib/application/vm_manager_impl.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/vm_manager_impl.cpp.o
+.PHONY : src/lib/application/vm_manager_impl.cpp.o
+
+src/lib/application/vm_manager_impl.i: src/lib/application/vm_manager_impl.cpp.i
+.PHONY : src/lib/application/vm_manager_impl.i
+
+# target to preprocess a source file
+src/lib/application/vm_manager_impl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/vm_manager_impl.cpp.i
+.PHONY : src/lib/application/vm_manager_impl.cpp.i
+
+src/lib/application/vm_manager_impl.s: src/lib/application/vm_manager_impl.cpp.s
+.PHONY : src/lib/application/vm_manager_impl.s
+
+# target to generate assembly for a file
+src/lib/application/vm_manager_impl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/application/vm_manager_impl.cpp.s
+.PHONY : src/lib/application/vm_manager_impl.cpp.s
+
+src/lib/domain/process/qemu_process.o: src/lib/domain/process/qemu_process.cpp.o
+.PHONY : src/lib/domain/process/qemu_process.o
+
+# target to build an object file
+src/lib/domain/process/qemu_process.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/process/qemu_process.cpp.o
+.PHONY : src/lib/domain/process/qemu_process.cpp.o
+
+src/lib/domain/process/qemu_process.i: src/lib/domain/process/qemu_process.cpp.i
+.PHONY : src/lib/domain/process/qemu_process.i
+
+# target to preprocess a source file
+src/lib/domain/process/qemu_process.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/process/qemu_process.cpp.i
+.PHONY : src/lib/domain/process/qemu_process.cpp.i
+
+src/lib/domain/process/qemu_process.s: src/lib/domain/process/qemu_process.cpp.s
+.PHONY : src/lib/domain/process/qemu_process.s
+
+# target to generate assembly for a file
+src/lib/domain/process/qemu_process.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/process/qemu_process.cpp.s
+.PHONY : src/lib/domain/process/qemu_process.cpp.s
+
+src/lib/domain/vm/virtual_machine.o: src/lib/domain/vm/virtual_machine.cpp.o
+.PHONY : src/lib/domain/vm/virtual_machine.o
+
+# target to build an object file
+src/lib/domain/vm/virtual_machine.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/virtual_machine.cpp.o
+.PHONY : src/lib/domain/vm/virtual_machine.cpp.o
+
+src/lib/domain/vm/virtual_machine.i: src/lib/domain/vm/virtual_machine.cpp.i
+.PHONY : src/lib/domain/vm/virtual_machine.i
+
+# target to preprocess a source file
+src/lib/domain/vm/virtual_machine.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/virtual_machine.cpp.i
+.PHONY : src/lib/domain/vm/virtual_machine.cpp.i
+
+src/lib/domain/vm/virtual_machine.s: src/lib/domain/vm/virtual_machine.cpp.s
+.PHONY : src/lib/domain/vm/virtual_machine.s
+
+# target to generate assembly for a file
+src/lib/domain/vm/virtual_machine.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/virtual_machine.cpp.s
+.PHONY : src/lib/domain/vm/virtual_machine.cpp.s
+
+src/lib/domain/vm/vm_configuration.o: src/lib/domain/vm/vm_configuration.cpp.o
+.PHONY : src/lib/domain/vm/vm_configuration.o
+
+# target to build an object file
+src/lib/domain/vm/vm_configuration.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/vm_configuration.cpp.o
+.PHONY : src/lib/domain/vm/vm_configuration.cpp.o
+
+src/lib/domain/vm/vm_configuration.i: src/lib/domain/vm/vm_configuration.cpp.i
+.PHONY : src/lib/domain/vm/vm_configuration.i
+
+# target to preprocess a source file
+src/lib/domain/vm/vm_configuration.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/vm_configuration.cpp.i
+.PHONY : src/lib/domain/vm/vm_configuration.cpp.i
+
+src/lib/domain/vm/vm_configuration.s: src/lib/domain/vm/vm_configuration.cpp.s
+.PHONY : src/lib/domain/vm/vm_configuration.s
+
+# target to generate assembly for a file
+src/lib/domain/vm/vm_configuration.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/vm_configuration.cpp.s
+.PHONY : src/lib/domain/vm/vm_configuration.cpp.s
+
+src/lib/domain/vm/vm_id.o: src/lib/domain/vm/vm_id.cpp.o
+.PHONY : src/lib/domain/vm/vm_id.o
+
+# target to build an object file
+src/lib/domain/vm/vm_id.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/vm_id.cpp.o
+.PHONY : src/lib/domain/vm/vm_id.cpp.o
+
+src/lib/domain/vm/vm_id.i: src/lib/domain/vm/vm_id.cpp.i
+.PHONY : src/lib/domain/vm/vm_id.i
+
+# target to preprocess a source file
+src/lib/domain/vm/vm_id.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/vm_id.cpp.i
+.PHONY : src/lib/domain/vm/vm_id.cpp.i
+
+src/lib/domain/vm/vm_id.s: src/lib/domain/vm/vm_id.cpp.s
+.PHONY : src/lib/domain/vm/vm_id.s
+
+# target to generate assembly for a file
+src/lib/domain/vm/vm_id.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/domain/vm/vm_id.cpp.s
+.PHONY : src/lib/domain/vm/vm_id.cpp.s
+
+src/lib/errors_impl.o: src/lib/errors_impl.cpp.o
+.PHONY : src/lib/errors_impl.o
+
+# target to build an object file
+src/lib/errors_impl.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/errors_impl.cpp.o
+.PHONY : src/lib/errors_impl.cpp.o
+
+src/lib/errors_impl.i: src/lib/errors_impl.cpp.i
+.PHONY : src/lib/errors_impl.i
+
+# target to preprocess a source file
+src/lib/errors_impl.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/errors_impl.cpp.i
+.PHONY : src/lib/errors_impl.cpp.i
+
+src/lib/errors_impl.s: src/lib/errors_impl.cpp.s
+.PHONY : src/lib/errors_impl.s
+
+# target to generate assembly for a file
+src/lib/errors_impl.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/errors_impl.cpp.s
+.PHONY : src/lib/errors_impl.cpp.s
+
+src/lib/types_minimal.o: src/lib/types_minimal.cpp.o
+.PHONY : src/lib/types_minimal.o
+
+# target to build an object file
+src/lib/types_minimal.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/types_minimal.cpp.o
+.PHONY : src/lib/types_minimal.cpp.o
+
+src/lib/types_minimal.i: src/lib/types_minimal.cpp.i
+.PHONY : src/lib/types_minimal.i
+
+# target to preprocess a source file
+src/lib/types_minimal.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/types_minimal.cpp.i
+.PHONY : src/lib/types_minimal.cpp.i
+
+src/lib/types_minimal.s: src/lib/types_minimal.cpp.s
+.PHONY : src/lib/types_minimal.s
+
+# target to generate assembly for a file
+src/lib/types_minimal.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/src/lib/types_minimal.cpp.s
+.PHONY : src/lib/types_minimal.cpp.s
+
 tests/unit/simple_test.o: tests/unit/simple_test.cpp.o
 .PHONY : tests/unit/simple_test.o
 
@@ -260,6 +619,54 @@ tests/unit/simple_test.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/simple_test.dir/build.make CMakeFiles/simple_test.dir/tests/unit/simple_test.cpp.s
 .PHONY : tests/unit/simple_test.cpp.s
 
+tests/utils/temp_directory.o: tests/utils/temp_directory.cpp.o
+.PHONY : tests/utils/temp_directory.o
+
+# target to build an object file
+tests/utils/temp_directory.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/tests/utils/temp_directory.cpp.o
+.PHONY : tests/utils/temp_directory.cpp.o
+
+tests/utils/temp_directory.i: tests/utils/temp_directory.cpp.i
+.PHONY : tests/utils/temp_directory.i
+
+# target to preprocess a source file
+tests/utils/temp_directory.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/tests/utils/temp_directory.cpp.i
+.PHONY : tests/utils/temp_directory.cpp.i
+
+tests/utils/temp_directory.s: tests/utils/temp_directory.cpp.s
+.PHONY : tests/utils/temp_directory.s
+
+# target to generate assembly for a file
+tests/utils/temp_directory.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/tests/utils/temp_directory.cpp.s
+.PHONY : tests/utils/temp_directory.cpp.s
+
+tests/utils/test_helpers.o: tests/utils/test_helpers.cpp.o
+.PHONY : tests/utils/test_helpers.o
+
+# target to build an object file
+tests/utils/test_helpers.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/tests/utils/test_helpers.cpp.o
+.PHONY : tests/utils/test_helpers.cpp.o
+
+tests/utils/test_helpers.i: tests/utils/test_helpers.cpp.i
+.PHONY : tests/utils/test_helpers.i
+
+# target to preprocess a source file
+tests/utils/test_helpers.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/tests/utils/test_helpers.cpp.i
+.PHONY : tests/utils/test_helpers.cpp.i
+
+tests/utils/test_helpers.s: tests/utils/test_helpers.cpp.s
+.PHONY : tests/utils/test_helpers.s
+
+# target to generate assembly for a file
+tests/utils/test_helpers.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/scratchpad_static.dir/build.make CMakeFiles/scratchpad_static.dir/tests/utils/test_helpers.cpp.s
+.PHONY : tests/utils/test_helpers.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -277,10 +684,54 @@ help:
 	@echo "... gmock_main"
 	@echo "... gtest"
 	@echo "... gtest_main"
+	@echo "... scratchpad_static"
 	@echo "... simple_test"
+	@echo "... test_communication_domain"
+	@echo "... test_config_and_errors"
+	@echo "... test_image_manager"
+	@echo "... test_process_domain"
+	@echo "... test_qemu_adapter"
+	@echo "... test_resource_manager"
+	@echo "... test_ssh_client"
+	@echo "... test_utils"
+	@echo "... test_vm_domain"
+	@echo "... test_vm_manager"
+	@echo "... src/lib/application/image_manager_impl.o"
+	@echo "... src/lib/application/image_manager_impl.i"
+	@echo "... src/lib/application/image_manager_impl.s"
+	@echo "... src/lib/application/resource_manager_impl.o"
+	@echo "... src/lib/application/resource_manager_impl.i"
+	@echo "... src/lib/application/resource_manager_impl.s"
+	@echo "... src/lib/application/vm_manager_impl.o"
+	@echo "... src/lib/application/vm_manager_impl.i"
+	@echo "... src/lib/application/vm_manager_impl.s"
+	@echo "... src/lib/domain/process/qemu_process.o"
+	@echo "... src/lib/domain/process/qemu_process.i"
+	@echo "... src/lib/domain/process/qemu_process.s"
+	@echo "... src/lib/domain/vm/virtual_machine.o"
+	@echo "... src/lib/domain/vm/virtual_machine.i"
+	@echo "... src/lib/domain/vm/virtual_machine.s"
+	@echo "... src/lib/domain/vm/vm_configuration.o"
+	@echo "... src/lib/domain/vm/vm_configuration.i"
+	@echo "... src/lib/domain/vm/vm_configuration.s"
+	@echo "... src/lib/domain/vm/vm_id.o"
+	@echo "... src/lib/domain/vm/vm_id.i"
+	@echo "... src/lib/domain/vm/vm_id.s"
+	@echo "... src/lib/errors_impl.o"
+	@echo "... src/lib/errors_impl.i"
+	@echo "... src/lib/errors_impl.s"
+	@echo "... src/lib/types_minimal.o"
+	@echo "... src/lib/types_minimal.i"
+	@echo "... src/lib/types_minimal.s"
 	@echo "... tests/unit/simple_test.o"
 	@echo "... tests/unit/simple_test.i"
 	@echo "... tests/unit/simple_test.s"
+	@echo "... tests/utils/temp_directory.o"
+	@echo "... tests/utils/temp_directory.i"
+	@echo "... tests/utils/temp_directory.s"
+	@echo "... tests/utils/test_helpers.o"
+	@echo "... tests/utils/test_helpers.i"
+	@echo "... tests/utils/test_helpers.s"
 .PHONY : help
 
 
