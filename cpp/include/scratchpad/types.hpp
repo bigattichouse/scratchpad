@@ -122,9 +122,12 @@ struct ResourceLimits {
 };
 
 struct ResourceUsage {
-    MemoryAmount used_memory;
-    DiskSize used_disk_space;
-    uint32_t active_processes;
+    MemoryAmount memory_used;
+    DiskSize disk_used;
+    double cpu_percent = 0.0;
+    uint64_t network_rx_bytes = 0;
+    uint64_t network_tx_bytes = 0;
+    uint32_t active_processes = 0;
     std::vector<PortNumber> allocated_ports;
 };
 

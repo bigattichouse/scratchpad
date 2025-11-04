@@ -21,6 +21,17 @@ enum class ProcessStatus {
 };
 
 /**
+ * Process resource usage information
+ */
+struct ProcessResourceUsage {
+    uint64_t memory_rss_bytes = 0;  // Resident Set Size memory
+    uint64_t memory_vms_bytes = 0;  // Virtual Memory Size
+    double cpu_percent = 0.0;       // CPU usage percentage
+    uint64_t io_read_bytes = 0;     // Total bytes read
+    uint64_t io_write_bytes = 0;    // Total bytes written
+};
+
+/**
  * Entity representing a QEMU process
  * 
  * Tracks the lifecycle, status, and metadata of a running QEMU process.
@@ -99,6 +110,12 @@ public:
      */
     std::chrono::system_clock::time_point created_at() const { return created_at_; }
 
+    /**
+     * Get process creation timestamp (alias for created_at)
+     * @return Creation time
+     */
+    std::chrono::system_clock::time_point creation_time() const { return created_at_; }
+
     // ========== Status Management ==========
 
     /**
@@ -134,6 +151,18 @@ public:
      * @throws ProcessError if process hasn't exited
      */
     void set_exit_code(int exit_code);
+
+    /**
+     * Get termination signal (for killed processes)
+     * @return Signal number if process was killed
+     */
+    std::optional<int> termination_signal() const { return termination_signal_; }
+
+    /**
+     * Set termination signal (for killed processes)
+     * @param signal Signal number
+     */
+    void set_termination_signal(int signal) { termination_signal_ = signal; }
 
     // ========== Monitoring ==========
 
@@ -174,6 +203,29 @@ public:
      * @return Filtered log entries
      */
     std::vector<LogEntry> get_logs_since(std::chrono::system_clock::time_point since) const;
+
+    /**
+     * Add log entry (alias for add_log_entry)
+     * @param level Log level
+     * @param message Log message
+     */
+    void add_log(LogLevel level, const std::string& message) {
+        add_log_entry(message, level);
+    }
+
+    /**
+     * Get log entries (alias for log_entries)
+     * @return All log entries
+     */
+    const std::deque<LogEntry>& logs() const { return log_entries_; }
+
+    /**
+     * Get filtered log entries by level
+     * @param level Minimum log level
+     * @param count Maximum number of entries
+     * @return Filtered log entries
+     */
+    std::vector<LogEntry> logs(LogLevel level, size_t count = 50) const;
 
     // ========== Runtime Statistics ==========
 
@@ -232,10 +284,62 @@ public:
     bool is_starting() const { return status_ == ProcessStatus::Starting; }
 
     /**
+     * Check if process has exited (stopped)
+     * @return true if status is Exited or Killed
+     */
+    bool has_exited() const { return is_stopped(); }
+
+    /**
+     * Check if process exited successfully (exit code 0)
+     * @return true if exited with code 0
+     */
+    bool exited_successfully() const {
+        return status_ == ProcessStatus::Exited && 
+               exit_code_.has_value() && exit_code_.value() == 0;
+    }
+
+    /**
      * Check if process is healthy
      * @return true if process appears to be running normally
      */
     bool is_healthy() const;
+
+    /**
+     * Check if process is responsive
+     * @return true if process is responding to health checks
+     */
+    bool is_responsive() const { return is_responsive_; }
+
+    /**
+     * Mark process as unresponsive
+     */
+    void mark_as_unresponsive() { is_responsive_ = false; }
+
+    /**
+     * Mark process as responsive
+     */
+    void mark_as_responsive() { is_responsive_ = true; }
+
+    // ========== Resource Management ==========
+
+    /**
+     * Get current resource usage
+     * @return Resource usage information
+     */
+    ProcessResourceUsage resource_usage() const { return current_resource_usage_; }
+
+    /**
+     * Set current resource usage
+     * @param usage Resource usage information
+     */
+    void set_resource_usage(const ProcessResourceUsage& usage);
+
+    /**
+     * Get resource usage history
+     * @return Historical resource usage data
+     */
+    const std::vector<std::pair<std::chrono::system_clock::time_point, ProcessResourceUsage>>& 
+    resource_usage_history() const { return resource_usage_history_; }
 
     // ========== Command Line Analysis ==========
 
@@ -264,6 +368,12 @@ public:
      * @return Status change history
      */
     const std::deque<StatusChange>& get_status_history() const { return status_history_; }
+
+    /**
+     * Get status history (alias for get_status_history)
+     * @return Status change history
+     */
+    const std::deque<StatusChange>& status_history() const { return get_status_history(); }
 
     // ========== Static Utilities ==========
 
@@ -325,6 +435,7 @@ private:
     // Status tracking
     ProcessStatus status_;
     std::optional<int> exit_code_;
+    std::optional<int> termination_signal_;
     
     // Timestamps
     std::chrono::system_clock::time_point created_at_;
@@ -335,10 +446,15 @@ private:
     
     // Runtime tracking
     std::chrono::milliseconds total_runtime_{0};
+    bool is_responsive_ = true;
     
     // History and logging
     std::deque<StatusChange> status_history_;
     std::deque<LogEntry> log_entries_;
+    
+    // Resource tracking
+    ProcessResourceUsage current_resource_usage_;
+    std::vector<std::pair<std::chrono::system_clock::time_point, ProcessResourceUsage>> resource_usage_history_;
 };
 
 } // namespace scratchpad

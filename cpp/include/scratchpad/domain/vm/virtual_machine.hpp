@@ -103,6 +103,14 @@ public:
         return created_at_; 
     }
 
+    /**
+     * Get creation timestamp (alias for created_at)
+     * @return VM creation time
+     */
+    std::chrono::system_clock::time_point creation_time() const { 
+        return created_at_; 
+    }
+
     // ========== Process Management ==========
 
     /**
@@ -119,6 +127,25 @@ public:
     void set_process_id(ProcessId pid);
 
     /**
+     * Get QEMU process ID (alias for process_id)
+     * @return Process ID (nullopt if no process)
+     */
+    std::optional<ProcessId> qemu_process_id() const { 
+        return process_id_ != 0 ? std::optional<ProcessId>(process_id_) : std::nullopt; 
+    }
+
+    /**
+     * Set QEMU process ID (alias for set_process_id)
+     * @param pid Process ID
+     */
+    void set_qemu_process_id(ProcessId pid) { set_process_id(pid); }
+
+    /**
+     * Clear QEMU process ID
+     */
+    void clear_qemu_process_id() { process_id_ = 0; }
+
+    /**
      * Check if VM has an associated process
      * @return true if process ID is set
      */
@@ -128,9 +155,11 @@ public:
 
     /**
      * Get allocated SSH port
-     * @return SSH port (0 if not allocated)
+     * @return SSH port (nullopt if not allocated)
      */
-    PortNumber ssh_port() const { return allocated_ssh_port_; }
+    std::optional<PortNumber> ssh_port() const { 
+        return allocated_ssh_port_ != 0 ? std::optional<PortNumber>(allocated_ssh_port_) : std::nullopt; 
+    }
 
     /**
      * Set allocated SSH port
@@ -138,6 +167,11 @@ public:
      * @throws VMError if port is invalid
      */
     void set_ssh_port(PortNumber port);
+
+    /**
+     * Clear allocated SSH port
+     */
+    void clear_ssh_port() { allocated_ssh_port_ = 0; }
 
     /**
      * Check if SSH port is allocated
@@ -241,6 +275,28 @@ public:
     bool is_crashed() const { return status_ == VMStatus::Crashed; }
 
     /**
+     * Check if VM has an error
+     * @return true if status is Error or Crashed
+     */
+    bool has_error() const { 
+        return status_ == VMStatus::Error || status_ == VMStatus::Crashed; 
+    }
+
+    /**
+     * Set VM to error state
+     * @param error_message Error description
+     */
+    void set_error(const std::string& error_message);
+
+    /**
+     * Get last error message
+     * @return Error message if in error state
+     */
+    std::string last_error() const { 
+        return last_error_message_.value_or(""); 
+    }
+
+    /**
      * Check if VM can be started
      * @return true if VM can transition to Starting
      */
@@ -265,11 +321,82 @@ public:
     const std::deque<StatusChange>& get_status_history() const;
 
     /**
+     * Get status history (alias for get_status_history)
+     * @return Status change history
+     */
+    const std::deque<StatusChange>& status_history() const { return get_status_history(); }
+
+    /**
      * Get recent status changes
      * @param count Maximum number of changes to return
      * @return Recent status changes
      */
     std::vector<StatusChange> get_recent_status_changes(size_t count = 10) const;
+
+    // ========== Resource Management ==========
+
+    /**
+     * Get current resource usage
+     * @return Resource usage information
+     */
+    ResourceUsage resource_usage() const { return current_resource_usage_; }
+
+    /**
+     * Set current resource usage
+     * @param usage Resource usage information
+     */
+    void set_resource_usage(const ResourceUsage& usage);
+
+    /**
+     * Resource usage history entry
+     */
+    struct ResourceUsageEntry {
+        std::chrono::system_clock::time_point timestamp;
+        ResourceUsage usage;
+        
+        ResourceUsageEntry(std::chrono::system_clock::time_point t, ResourceUsage u)
+            : timestamp(t), usage(u) {}
+    };
+    
+    /**
+     * Get resource usage history
+     * @return Historical resource usage data
+     */
+    const std::vector<ResourceUsageEntry>& 
+    resource_usage_history() const { return resource_usage_history_; }
+
+    /**
+     * Get uptime duration
+     * @return Current uptime as duration
+     */
+    std::chrono::milliseconds uptime() const { return get_current_uptime(); }
+
+    // ========== Persistence Management ==========
+
+    /**
+     * Check if VM can be persisted in current state
+     * @return true if VM state allows persistence
+     */
+    bool can_be_persisted() const;
+
+    /**
+     * Mark VM as persistent
+     */
+    void mark_as_persistent() { is_persistent_ = true; }
+
+    /**
+     * Check if VM is marked as persistent
+     * @return true if VM is persistent
+     */
+    bool is_persistent() const { return is_persistent_; }
+
+    // ========== State Validation ==========
+
+    /**
+     * Check if VM is in a valid consistent state
+     * @return true if state is valid
+     */
+    bool is_in_valid_state() const;
 
     // ========== Static Utilities ==========
 
@@ -326,6 +453,16 @@ private:
     
     // History tracking
     std::deque<StatusChange> status_history_;
+    
+    // Error tracking
+    std::optional<std::string> last_error_message_;
+    
+    // Resource tracking
+    ResourceUsage current_resource_usage_;
+    std::vector<ResourceUsageEntry> resource_usage_history_;
+    
+    // Persistence flag
+    bool is_persistent_ = false;
 };
 
 } // namespace scratchpad

@@ -1,6 +1,7 @@
 #include "scratchpad/domain/vm/virtual_machine.hpp"
 #include "scratchpad/errors.hpp"
 #include <chrono>
+#include <algorithm>
 
 namespace scratchpad {
 
@@ -11,7 +12,9 @@ VirtualMachine::VirtualMachine(const VMConfiguration& config)
     , created_at_(std::chrono::system_clock::now())
     , last_status_change_(created_at_)
     , start_count_(0)
-    , total_uptime_(std::chrono::milliseconds::zero()) {
+    , total_uptime_(std::chrono::milliseconds::zero())
+    , current_resource_usage_({})
+    , is_persistent_(false) {
     
     // Validate configuration
     config_.validate();
@@ -24,7 +27,9 @@ VirtualMachine::VirtualMachine(VMConfiguration&& config)
     , created_at_(std::chrono::system_clock::now())
     , last_status_change_(created_at_)
     , start_count_(0)
-    , total_uptime_(std::chrono::milliseconds::zero()) {
+    , total_uptime_(std::chrono::milliseconds::zero())
+    , current_resource_usage_({})
+    , is_persistent_(false) {
     
     // Validate configuration
     config_.validate();
@@ -72,6 +77,11 @@ void VirtualMachine::set_status(VMStatus new_status) {
     // Keep history limited to last 100 entries
     if (status_history_.size() > 100) {
         status_history_.pop_front();
+    }
+    
+    // Clear error message when transitioning to normal state
+    if (new_status != VMStatus::Error && new_status != VMStatus::Crashed) {
+        last_error_message_.reset();
     }
 }
 
@@ -198,20 +208,28 @@ bool VirtualMachine::is_valid_status_transition(VMStatus from, VMStatus to) {
         return true;
     }
     
+    // Error state can be reached from any state
+    if (to == VMStatus::Error || to == VMStatus::Crashed) {
+        return true;
+    }
+    
     switch (from) {
         case VMStatus::Stopped:
             return to == VMStatus::Starting;
             
         case VMStatus::Starting:
-            return to == VMStatus::Running || to == VMStatus::Crashed || to == VMStatus::Stopped;
+            return to == VMStatus::Running || to == VMStatus::Stopped;
             
         case VMStatus::Running:
-            return to == VMStatus::Stopping || to == VMStatus::Crashed;
+            return to == VMStatus::Stopping;
             
         case VMStatus::Stopping:
-            return to == VMStatus::Stopped || to == VMStatus::Crashed;
+            return to == VMStatus::Stopped;
             
         case VMStatus::Crashed:
+            return to == VMStatus::Stopped || to == VMStatus::Starting;
+            
+        case VMStatus::Error:
             return to == VMStatus::Stopped || to == VMStatus::Starting;
     }
     
@@ -225,6 +243,7 @@ std::string_view VirtualMachine::status_to_string(VMStatus status) {
         case VMStatus::Running:     return "running";
         case VMStatus::Stopping:   return "stopping";
         case VMStatus::Crashed:     return "crashed";
+        case VMStatus::Error:       return "error";
     }
     return "unknown";
 }
@@ -235,9 +254,10 @@ VMStatus VirtualMachine::status_from_string(std::string_view status_str) {
     if (status_str == "running")    return VMStatus::Running;
     if (status_str == "stopping")  return VMStatus::Stopping;
     if (status_str == "crashed")    return VMStatus::Crashed;
+    if (status_str == "error")      return VMStatus::Error;
     
     THROW_VM_ERROR(ErrorCode::InvalidArgument,
-                  "Unknown VM status: " + std::string(status_str));
+                  "Unknown VM status: " + std::string(status_str), "");
 }
 
 // Comparison operators for sorting/searching
@@ -251,6 +271,71 @@ bool VirtualMachine::operator==(const VirtualMachine& other) const {
 
 bool VirtualMachine::operator!=(const VirtualMachine& other) const {
     return !(*this == other);
+}
+
+void VirtualMachine::set_error(const std::string& error_message) {
+    last_error_message_ = error_message;
+    status_ = VMStatus::Error;
+    last_status_change_ = std::chrono::system_clock::now();
+    
+    // Add to status history
+    status_history_.emplace_back(status_, VMStatus::Error, last_status_change_);
+    
+    // Keep history limited
+    if (status_history_.size() > 100) {
+        status_history_.pop_front();
+    }
+}
+
+void VirtualMachine::set_resource_usage(const ResourceUsage& usage) {
+    current_resource_usage_ = usage;
+    
+    // Add to history with timestamp
+    resource_usage_history_.emplace_back(
+        std::chrono::system_clock::now(), usage
+    );
+    
+    // Keep history limited to last 1000 entries
+    if (resource_usage_history_.size() > 1000) {
+        resource_usage_history_.erase(resource_usage_history_.begin());
+    }
+}
+
+bool VirtualMachine::can_be_persisted() const {
+    // Cannot persist VMs in error states
+    if (status_ == VMStatus::Error || status_ == VMStatus::Crashed) {
+        return false;
+    }
+    
+    // Cannot persist VMs that are transitioning
+    if (status_ == VMStatus::Starting || status_ == VMStatus::Stopping) {
+        return false;
+    }
+    
+    return true;
+}
+
+bool VirtualMachine::is_in_valid_state() const {
+    // Running VMs must have a process ID
+    if (status_ == VMStatus::Running && process_id_ == 0) {
+        return false;
+    }
+    
+    // Stopped VMs should not have process IDs
+    if (status_ == VMStatus::Stopped && process_id_ != 0) {
+        return false;
+    }
+    
+    // Port numbers must be valid if set
+    if (allocated_ssh_port_ != 0 && (allocated_ssh_port_ < 1024 || allocated_ssh_port_ > 65535)) {
+        return false;
+    }
+    
+    if (allocated_vnc_port_ != 0 && (allocated_vnc_port_ < 5900 || allocated_vnc_port_ > 5999)) {
+        return false;
+    }
+    
+    return true;
 }
 
 } // namespace scratchpad

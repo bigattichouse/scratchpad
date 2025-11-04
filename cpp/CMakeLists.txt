@@ -42,6 +42,15 @@ include(GoogleTest)
 add_library(scratchpad_static STATIC
     tests/utils/test_helpers.cpp
     tests/utils/temp_directory.cpp
+    src/lib/domain/vm/vm_id.cpp
+    src/lib/domain/vm/vm_configuration.cpp
+    src/lib/domain/vm/virtual_machine.cpp
+    src/lib/domain/process/qemu_process.cpp
+    src/lib/application/vm_manager_impl.cpp
+    src/lib/application/image_manager_impl.cpp
+    src/lib/application/resource_manager_impl.cpp
+    src/lib/types_minimal.cpp
+    src/lib/errors_impl.cpp
 )
 
 target_include_directories(scratchpad_static PUBLIC

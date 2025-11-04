@@ -3,6 +3,7 @@
 #include <regex>
 #include <algorithm>
 #include <cctype>
+#include <random>
 
 namespace scratchpad {
 
@@ -55,13 +56,19 @@ void VMId::validate() const {
 
 VMId VMId::generate_unique(const std::string& prefix) {
     auto now = std::chrono::system_clock::now();
-    auto timestamp = std::chrono::duration_cast<std::chrono::milliseconds>(now.time_since_epoch()).count();
+    auto timestamp = std::chrono::duration_cast<std::chrono::microseconds>(now.time_since_epoch()).count();
+    
+    // Add a random component to ensure uniqueness
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(1000, 9999);
+    auto random_part = dis(gen);
     
     std::string unique_id;
     if (!prefix.empty()) {
-        unique_id = prefix + "-" + std::to_string(timestamp);
+        unique_id = prefix + "-" + std::to_string(timestamp) + "-" + std::to_string(random_part);
     } else {
-        unique_id = "vm-" + std::to_string(timestamp);
+        unique_id = "vm-" + std::to_string(timestamp) + "-" + std::to_string(random_part);
     }
     
     return VMId(unique_id);

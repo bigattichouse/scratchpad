@@ -278,7 +278,7 @@ ProcessStatus QemuProcess::status_from_string(std::string_view status_str) {
     if (status_str == "killed")     return ProcessStatus::Killed;
     
     THROW_PROCESS_ERROR(ErrorCode::InvalidArgument,
-                       "Unknown process status: " + std::string(status_str));
+                       "Unknown process status: " + std::string(status_str), 0);
 }
 
 std::string_view QemuProcess::log_level_to_string(LogLevel level) {
@@ -311,6 +311,35 @@ bool QemuProcess::operator==(const QemuProcess& other) const {
 
 bool QemuProcess::operator!=(const QemuProcess& other) const {
     return !(*this == other);
+}
+
+std::vector<QemuProcess::LogEntry> QemuProcess::logs(LogLevel level, size_t count) const {
+    std::vector<LogEntry> filtered;
+    size_t added = 0;
+    
+    // Iterate from most recent backwards
+    for (auto it = log_entries_.rbegin(); it != log_entries_.rend() && added < count; ++it) {
+        if (static_cast<int>(it->level) >= static_cast<int>(level)) {
+            filtered.insert(filtered.begin(), *it);
+            added++;
+        }
+    }
+    
+    return filtered;
+}
+
+void QemuProcess::set_resource_usage(const ProcessResourceUsage& usage) {
+    current_resource_usage_ = usage;
+    
+    // Add to history with timestamp
+    resource_usage_history_.emplace_back(
+        std::chrono::system_clock::now(), usage
+    );
+    
+    // Keep history limited to last 1000 entries
+    if (resource_usage_history_.size() > 1000) {
+        resource_usage_history_.erase(resource_usage_history_.begin());
+    }
 }
 
 } // namespace scratchpad

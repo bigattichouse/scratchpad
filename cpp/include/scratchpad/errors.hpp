@@ -139,6 +139,17 @@ private:
     std::string config_key_;
 };
 
+/**
+ * Validation errors for input validation
+ */
+class ValidationError : public ScratchpadError {
+public:
+    explicit ValidationError(std::string_view message)
+        : ScratchpadError(ErrorCode::InvalidArgument, message) {}
+    
+    std::string_view category() const noexcept override { return "validation"; }
+};
+
 // Utility functions for error handling
 
 /**
