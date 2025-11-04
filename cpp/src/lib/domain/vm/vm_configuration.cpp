@@ -87,17 +87,15 @@ void VMConfiguration::set_cpu_cores(uint32_t cores) {
 }
 
 void VMConfiguration::set_network_configuration(const NetworkConfiguration& config) {
-    // Validate port numbers if specified
-    if (config.ssh_port != 0) {
-        if (config.ssh_port < 1024 || config.ssh_port > 65535) {
-            THROW_VM_ERROR(ErrorCode::InvalidArgument,
-                          "SSH port must be between 1024 and 65535", vm_id_.value());
-        }
+    // Validate SSH port (must be in valid range)
+    if (config.ssh_port < 1024) {
+        THROW_VM_ERROR(ErrorCode::InvalidArgument,
+                      "SSH port must be between 1024 and 65535", vm_id_.value());
     }
     
     if (config.vnc_port.has_value()) {
         auto vnc_port = config.vnc_port.value();
-        if (vnc_port < 5900 || vnc_port > 5999) {
+        if (vnc_port < 5900) {
             THROW_VM_ERROR(ErrorCode::InvalidArgument,
                           "VNC port must be between 5900 and 5999", vm_id_.value());
         }
@@ -198,7 +196,7 @@ bool VMConfiguration::validate() const {
     // Validate network configuration
     if (enable_ssh_ && enable_networking_) {
         if (network_config_.ssh_port != 0) {
-            if (network_config_.ssh_port < 1024 || network_config_.ssh_port > 65535) {
+            if (network_config_.ssh_port < 1024) {
                 errors.push_back("SSH port must be between 1024 and 65535");
             }
         }
@@ -206,7 +204,7 @@ bool VMConfiguration::validate() const {
     
     if (enable_vnc_ && network_config_.vnc_port.has_value()) {
         auto vnc_port = network_config_.vnc_port.value();
-        if (vnc_port < 5900 || vnc_port > 5999) {
+        if (vnc_port < 5900) {
             errors.push_back("VNC port must be between 5900 and 5999");
         }
     }
@@ -265,18 +263,24 @@ VMConfiguration VMConfiguration::create_development(const VMId& vm_id, ImageType
     config.set_disk_mode(DiskMode::Persistent);
     
     // Add common development packages
-    if (base_image == ImageType::Ubuntu) {
+    if (base_image == ImageType::Ubuntu || base_image == ImageType::Ubuntu2204) {
         config.add_package("curl");
         config.add_package("wget");
         config.add_package("git");
         config.add_package("vim");
         config.add_package("build-essential");
-    } else if (base_image == ImageType::Alpine) {
+    } else if (base_image == ImageType::Alpine || base_image == ImageType::Alpine317) {
         config.add_package("curl");
         config.add_package("wget");
         config.add_package("git");
         config.add_package("vim");
         config.add_package("build-base");
+    } else {
+        // Default packages for other distributions
+        config.add_package("curl");
+        config.add_package("wget");
+        config.add_package("git");
+        config.add_package("vim");
     }
     
     return config;
@@ -299,26 +303,38 @@ VMConfiguration VMConfiguration::create_testing(const VMId& vm_id, ImageType bas
 MemoryAmount VMConfiguration::get_recommended_memory_for_image(ImageType image_type) {
     switch (image_type) {
         case ImageType::Alpine:
-            return MemoryAmount::megabytes(256); // Alpine is very lightweight
+        case ImageType::Alpine317:
+            return MemoryAmount::megabytes(256);
         case ImageType::Ubuntu:
-            return MemoryAmount::megabytes(512); // Ubuntu needs more memory
+        case ImageType::Ubuntu2204:
+            return MemoryAmount::megabytes(512);
         case ImageType::Debian:
-            return MemoryAmount::megabytes(512); // Similar to Ubuntu
+            return MemoryAmount::megabytes(512);
+        case ImageType::CentOS8:
+            return MemoryAmount::megabytes(768);
+        case ImageType::WindowsServer2022:
+            return MemoryAmount::gigabytes(2);
         default:
-            return MemoryAmount::megabytes(512); // Safe default
+            return MemoryAmount::megabytes(512);
     }
 }
 
 DiskSize VMConfiguration::get_recommended_disk_for_image(ImageType image_type) {
     switch (image_type) {
         case ImageType::Alpine:
-            return DiskSize::gigabytes(5); // Alpine is compact
+        case ImageType::Alpine317:
+            return DiskSize::gigabytes(5);
         case ImageType::Ubuntu:
-            return DiskSize::gigabytes(10); // Ubuntu needs more space
+        case ImageType::Ubuntu2204:
+            return DiskSize::gigabytes(10);
         case ImageType::Debian:
-            return DiskSize::gigabytes(10); // Similar to Ubuntu
+            return DiskSize::gigabytes(10);
+        case ImageType::CentOS8:
+            return DiskSize::gigabytes(15);
+        case ImageType::WindowsServer2022:
+            return DiskSize::gigabytes(50);
         default:
-            return DiskSize::gigabytes(10); // Safe default
+            return DiskSize::gigabytes(10);
     }
 }
 

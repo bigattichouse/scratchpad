@@ -215,13 +215,13 @@ bool VirtualMachine::is_valid_status_transition(VMStatus from, VMStatus to) {
     
     switch (from) {
         case VMStatus::Stopped:
-            return to == VMStatus::Starting;
+            return to == VMStatus::Starting || to == VMStatus::Running;
             
         case VMStatus::Starting:
             return to == VMStatus::Running || to == VMStatus::Stopped;
             
         case VMStatus::Running:
-            return to == VMStatus::Stopping;
+            return to == VMStatus::Stopping || to == VMStatus::Stopped;
             
         case VMStatus::Stopping:
             return to == VMStatus::Stopped;
