@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "domain/vm/vm_configuration.hpp"
+#include "scratchpad/domain/vm/vm_configuration.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 

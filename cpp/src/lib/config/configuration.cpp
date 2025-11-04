@@ -1,4 +1,4 @@
-#include "config/configuration.hpp"
+#include "scratchpad/config/configuration.hpp"
 #include "scratchpad/errors.hpp"
 #include <nlohmann/json.hpp>
 #include <fstream>

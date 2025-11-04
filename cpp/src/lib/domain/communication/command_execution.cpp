@@ -1,4 +1,4 @@
-#include "domain/communication/command_execution.hpp"
+#include "scratchpad/domain/communication/command_execution.hpp"
 #include "scratchpad/errors.hpp"
 
 namespace scratchpad {

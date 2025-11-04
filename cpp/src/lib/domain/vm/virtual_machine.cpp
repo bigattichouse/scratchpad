@@ -1,4 +1,4 @@
-#include "domain/vm/virtual_machine.hpp"
+#include "scratchpad/domain/vm/virtual_machine.hpp"
 #include "scratchpad/errors.hpp"
 #include <chrono>
 

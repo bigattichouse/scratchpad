@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "scratchpad/ssh_client.hpp"
+#include "scratchpad/infrastructure/ssh/ssh_client.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 #include <thread>

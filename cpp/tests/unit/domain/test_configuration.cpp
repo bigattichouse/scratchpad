@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "config/configuration.hpp"
+#include "scratchpad/config/configuration.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 #include <fstream>

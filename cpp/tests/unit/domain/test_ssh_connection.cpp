@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "domain/communication/ssh_connection.hpp"
+#include "scratchpad/domain/communication/ssh_connection.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 #include <thread>

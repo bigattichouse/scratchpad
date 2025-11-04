@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "infrastructure/qemu/qemu_adapter.hpp"
+#include "scratchpad/infrastructure/qemu/qemu_adapter.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 #include <thread>

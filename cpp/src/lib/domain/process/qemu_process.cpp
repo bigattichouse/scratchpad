@@ -1,4 +1,4 @@
-#include "domain/process/qemu_process.hpp"
+#include "scratchpad/domain/process/qemu_process.hpp"
 #include "scratchpad/errors.hpp"
 #include <algorithm>
 

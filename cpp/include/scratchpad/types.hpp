@@ -17,8 +17,8 @@ class PreparedImage;
 class QemuProcess;
 class SSHConnection;
 
-// Core identifier types
-using VMId = std::string;
+// VMId forward declaration - include full definition when needed
+class VMId;
 using ProcessId = uint32_t;
 using PreparedImageId = std::string;
 using PortNumber = uint16_t;
@@ -28,6 +28,7 @@ struct MemoryAmount {
     uint64_t bytes;
     
     static MemoryAmount from_string(const std::string& str);
+    static MemoryAmount from_bytes(uint64_t bytes) { return {bytes}; }
     std::string to_string() const;
     
     // Common constructors
@@ -39,6 +40,7 @@ struct DiskSize {
     uint64_t bytes;
     
     static DiskSize from_string(const std::string& str);
+    static DiskSize from_bytes(uint64_t bytes) { return {bytes}; }
     std::string to_string() const;
     
     // Common constructors
@@ -71,7 +73,8 @@ enum class VMStatus {
     Starting,
     Running,
     Stopping,
-    Crashed
+    Crashed,
+    Error
 };
 
 enum class AccelerationType {
@@ -83,8 +86,12 @@ enum class AccelerationType {
 
 enum class ImageType {
     Ubuntu,
+    Ubuntu2204,
     Alpine,
-    Debian
+    Alpine317,
+    Debian,
+    CentOS8,
+    WindowsServer2022
 };
 
 // Command execution results
@@ -131,7 +138,7 @@ struct HealthStatus {
 };
 
 struct HealthReport {
-    VMId vm_id;
+    std::string vm_id;
     VMStatus status;
     HealthStatus health;
     std::chrono::system_clock::time_point last_check;

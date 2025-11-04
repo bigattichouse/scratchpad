@@ -29,15 +29,15 @@ private:
  */
 class VMError : public ScratchpadError {
 public:
-    explicit VMError(ErrorCode code, std::string_view message, VMId vm_id = {})
+    explicit VMError(ErrorCode code, std::string_view message, std::string vm_id = "")
         : ScratchpadError(code, message)
         , vm_id_(std::move(vm_id)) {}
     
-    const VMId& vm_id() const noexcept { return vm_id_; }
+    const std::string& vm_id() const noexcept { return vm_id_; }
     std::string_view category() const noexcept override { return "vm"; }
 
 private:
-    VMId vm_id_;
+    std::string vm_id_;
 };
 
 /**

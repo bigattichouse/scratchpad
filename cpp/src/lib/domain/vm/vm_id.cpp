@@ -1,4 +1,4 @@
-#include "domain/vm/vm_id.hpp"
+#include "scratchpad/domain/vm/vm_id.hpp"
 #include "scratchpad/errors.hpp"
 #include <regex>
 #include <algorithm>
@@ -16,29 +16,23 @@ VMId::VMId(std::string&& id) : value_(std::move(id)) {
 
 void VMId::validate() const {
     if (value_.empty()) {
-        THROW_VM_ERROR(ErrorCode::InvalidArgument, "VM ID cannot be empty", value_);
+        throw ValidationError("VM ID cannot be empty");
     }
     
     if (value_.length() > MAX_LENGTH) {
-        THROW_VM_ERROR(ErrorCode::InvalidArgument, 
-                      "VM ID cannot be longer than " + std::to_string(MAX_LENGTH) + " characters", 
-                      value_);
+        throw ValidationError("VM ID cannot be longer than " + std::to_string(MAX_LENGTH) + " characters");
     }
     
     // Check for valid characters (alphanumeric, hyphens, underscores)
     static const std::regex valid_pattern("^[a-zA-Z0-9_-]+$");
     if (!std::regex_match(value_, valid_pattern)) {
-        THROW_VM_ERROR(ErrorCode::InvalidArgument,
-                      "VM ID can only contain alphanumeric characters, hyphens, and underscores",
-                      value_);
+        throw ValidationError("VM ID can only contain alphanumeric characters, hyphens, and underscores");
     }
     
     // Cannot start or end with hyphen or underscore
     if (value_.front() == '-' || value_.front() == '_' ||
         value_.back() == '-' || value_.back() == '_') {
-        THROW_VM_ERROR(ErrorCode::InvalidArgument,
-                      "VM ID cannot start or end with hyphen or underscore",
-                      value_);
+        throw ValidationError("VM ID cannot start or end with hyphen or underscore");
     }
     
     // Check for reserved names
@@ -54,9 +48,7 @@ void VMId::validate() const {
     
     for (const auto& reserved : reserved_names) {
         if (lower_id == reserved) {
-            THROW_VM_ERROR(ErrorCode::InvalidArgument,
-                          "VM ID '" + value_ + "' is reserved and cannot be used",
-                          value_);
+            throw ValidationError("VM ID '" + value_ + "' is reserved and cannot be used");
         }
     }
 }
@@ -79,7 +71,7 @@ bool VMId::is_valid_format(const std::string& id) {
     try {
         VMId temp(id);
         return true;
-    } catch (const VMError&) {
+    } catch (const ValidationError&) {
         return false;
     }
 }

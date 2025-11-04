@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "domain/communication/command_execution.hpp"
+#include "scratchpad/domain/communication/command_execution.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 #include <thread>

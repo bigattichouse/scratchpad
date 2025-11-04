@@ -1,4 +1,4 @@
-#include "domain/vm/vm_configuration.hpp"
+#include "scratchpad/domain/vm/vm_configuration.hpp"
 #include "scratchpad/errors.hpp"
 #include <algorithm>
 

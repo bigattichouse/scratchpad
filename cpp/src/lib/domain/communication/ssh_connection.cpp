@@ -1,4 +1,4 @@
-#include "domain/communication/ssh_connection.hpp"
+#include "scratchpad/domain/communication/ssh_connection.hpp"
 #include "scratchpad/errors.hpp"
 
 namespace scratchpad {

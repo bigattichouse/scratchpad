@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "domain/process/qemu_process.hpp"
+#include "scratchpad/domain/process/qemu_process.hpp"
 #include "utils/test_helpers.hpp"
 #include "scratchpad/errors.hpp"
 #include <thread>
