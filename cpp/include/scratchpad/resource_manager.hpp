@@ -2,7 +2,10 @@
 
 #include "types.hpp"
 #include "errors.hpp"
+#include "domain/vm/vm_id.hpp"
 #include <memory>
+#include <map>
+#include <mutex>
 #include <vector>
 #include <optional>
 #include <chrono>

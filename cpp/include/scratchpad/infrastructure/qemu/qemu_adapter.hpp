@@ -67,6 +67,10 @@ public:
     // Configuration
     virtual const Options& get_options() const;
     virtual void update_options(const Options& new_options);
+    
+    // Command building (implementation compatibility)
+    virtual Options build_options(const VMConfiguration& config) const;
+    virtual std::vector<std::string> build_command_line(const VMConfiguration& config, const Options& options) const;
 
 private:
     class Impl {

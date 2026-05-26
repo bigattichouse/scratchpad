@@ -339,14 +339,14 @@ ResourceUsage VMManagerImpl::get_resource_usage() const {
         
         if (state->vm->status() == VMStatus::Running) {
             usage.running_vms++;
-            usage.allocated_memory += state->vm->configuration().memory.bytes;
-            usage.allocated_disk += state->vm->configuration().disk_size.bytes;
+            usage.allocated_memory += state->vm->configuration().memory().bytes;
+            usage.allocated_disk += state->vm->configuration().disk_size().bytes;
         }
         usage.total_vms++;
     }
     
     std::lock_guard ports_lock(ports_mutex_);
-    usage.allocated_ports = allocated_ports_.size();
+    usage.allocated_ports.assign(allocated_ports_.begin(), allocated_ports_.end());
     
     return usage;
 }
@@ -426,7 +426,7 @@ void VMManagerImpl::establish_ssh_connection(VMState& state) {
     int max_retries = 30;
     for (int i = 0; i < max_retries; ++i) {
         try {
-            ssh_client_->connect(*state.ssh_connection);
+            state.ssh_connection->connect();
             if (state.ssh_connection->is_connected()) {
                 logger_.debug("SSH connection established for VM: {}", state.vm->id().value());
                 return;

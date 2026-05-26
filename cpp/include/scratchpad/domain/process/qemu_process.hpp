@@ -78,6 +78,16 @@ public:
      */
     QemuProcess(ProcessId pid, const std::vector<std::string>& command_line);
 
+    /**
+     * Construct QEMU process tracker (implementation compatibility)
+     * @param vm_id VM identifier (will use PID 0 until actual process starts)
+     * @param command_line Command line arguments used to start process
+     */
+    QemuProcess(const VMId& vm_id, const std::vector<std::string>& command_line)
+        : QemuProcess(0, command_line) {
+        // Implementation compatibility constructor - real PID set later via start()
+    }
+
     // Copy and move semantics
     QemuProcess(const QemuProcess&) = default;
     QemuProcess(QemuProcess&&) = default;
@@ -246,6 +256,26 @@ public:
      * @return Time since last check
      */
     std::chrono::milliseconds get_time_since_last_check() const;
+
+    // ========== Process Control (Implementation Compatibility) ==========
+
+    /**
+     * Start the process (implementation compatibility)
+     * Note: This is a placeholder - actual process starting should be handled by QemuAdapter
+     */
+    void start() {
+        // Implementation compatibility method - actual start logic in QemuAdapter
+        set_status(ProcessStatus::Starting);
+    }
+
+    /**
+     * Stop the process (implementation compatibility)
+     * Note: This is a placeholder - actual process stopping should be handled by QemuAdapter
+     */
+    void stop() {
+        // Implementation compatibility method - actual stop logic in QemuAdapter
+        set_status(ProcessStatus::Exited);
+    }
 
     /**
      * Get started timestamp

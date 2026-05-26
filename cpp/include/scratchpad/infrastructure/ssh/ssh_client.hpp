@@ -11,6 +11,9 @@
 
 namespace scratchpad {
 
+// Forward declarations
+class VMManager;
+
 /**
  * SSH client interface for remote command execution and file transfer
  * This is a stub header for test compilation
@@ -51,14 +54,7 @@ public:
         ConnectionStatus status;
     };
 
-    struct CommandResult {
-        bool success;
-        int exit_code = 0;
-        std::string stdout_output;
-        std::string stderr_output;
-        std::string error_message;
-        std::chrono::duration<double> execution_time{0};
-    };
+    // Using global CommandResult type from types.hpp for compatibility
 
     struct FileTransferResult {
         bool success;
@@ -95,11 +91,19 @@ public:
     virtual bool is_connected() const;
     virtual ConnectionState get_connection_state() const;
     virtual void validate_connection_info(const ConnectionInfo& info) const;
+    
+    // Factory methods (implementation compatibility)
+    virtual std::unique_ptr<SSHConnection> create_connection(const SSHCredentials& credentials);
 
     // Command execution
     virtual CommandResult execute_command(const std::string& command);
     virtual CommandResult execute_command(const std::string& command, std::chrono::milliseconds timeout);
     virtual std::future<CommandResult> execute_command_async(const std::string& command);
+    
+    // Implementation compatibility - command execution with connection and params
+    virtual CommandResult execute_command(SSHConnection& connection, const VMManager::ExecuteParams& params);
+    virtual void copy_file_to_remote(SSHConnection& connection, const std::string& source, const std::string& destination);
+    virtual void copy_file_from_remote(SSHConnection& connection, const std::string& source, const std::string& destination);
 
     // File transfer
     virtual FileTransferResult upload_file(const std::string& local_path, const std::string& remote_path);

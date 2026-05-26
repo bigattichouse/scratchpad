@@ -129,8 +129,11 @@ struct NetworkConfiguration {
 struct ResourceLimits {
     MemoryAmount max_memory = MemoryAmount::gigabytes(8);
     DiskSize max_disk_size = DiskSize::gigabytes(100);
+    DiskSize max_disk = DiskSize::gigabytes(100); // Alias for compatibility
     uint32_t max_cpu_cores = 4;
     PortRange port_range = {2222, 9999};
+    uint32_t max_vms = 10;
+    uint32_t max_ports = 1000;
 };
 
 struct ResourceUsage {
@@ -147,6 +150,7 @@ struct ResourceUsage {
     uint32_t total_vms = 0;
     uint64_t allocated_memory = 0;
     uint64_t allocated_disk = 0;
+    uint32_t allocated_cpu_cores = 0;
 };
 
 // Health check results
@@ -220,6 +224,52 @@ struct ProgressInfo {
     // Default constructor
     ProgressInfo() = default;
 };
+
+// Resource management types
+struct ResourceRequest {
+    VMId vm_id;
+    MemoryAmount memory;
+    DiskSize disk;
+    uint32_t cpu_cores;
+    PortRange port_range = {20000, 30000};
+};
+
+struct ResourceAllocation {
+    VMId vm_id;
+    MemoryAmount memory;
+    DiskSize disk;
+    uint32_t cpu_cores;
+    PortNumber ssh_port = 0;
+    std::optional<PortNumber> vnc_port;
+    std::chrono::system_clock::time_point allocated_at;
+};
+
+struct SystemResources {
+    MemoryAmount total_memory;
+    DiskSize total_disk;
+    uint32_t total_cpu_cores;
+    PortRange available_port_range;
+    double cpu_usage_percent = 0.0;
+    double memory_usage_percent = 0.0;
+    double disk_usage_percent = 0.0;
+};
+
+struct MemoryUsage {
+    size_t used_bytes = 0;
+    size_t total_bytes = 0;
+    double usage_percent = 0.0;
+    std::vector<std::string> top_consumers;
+};
+
+enum class ResourceEvent {
+    Allocated,
+    Deallocated,
+    LimitExceeded,
+    SystemLow,
+    SystemCritical
+};
+
+using ResourceCallback = std::function<void(ResourceEvent event, const std::string& details)>;
 
 // SSH credentials and configuration
 struct SSHCredentials {
